@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_layout"
+    style="@style/general_view_linear_layout_style">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/search_material_toolbar"
+        style="@style/search_material_toolbar_style"
+        app:titleTextAppearance="@style/screens_title" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/search_material_card_view"
+        style="@style/search_material_card_view">
+        <EditText
+            android:id="@+id/input_edit_text"
+            style="@style/search_edit_text"
+            tools:ignore="TouchTargetSizeCheck"/>
+        <ImageView
+            android:id="@+id/clearIcon"
+            style="@style/clear_close_cancel_image_view" />
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>
