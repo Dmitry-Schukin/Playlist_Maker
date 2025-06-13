@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import com.google.android.material.appbar.MaterialToolbar
 
@@ -53,7 +54,7 @@ class SearchActivity : AppCompatActivity() {
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 savedValue = inputEditText.text.toString()
-                clearButton.visibility = clearButtonVisibility(s)
+                clearButton.isVisible = !s.isNullOrEmpty()
             }
             override fun afterTextChanged(s: Editable?) {
                 // empty
@@ -63,13 +64,7 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.addTextChangedListener(simpleTextWatcher)
         inputEditText.setText(savedValue)
     }
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
-    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(EDIT_TEXT, savedValue)
