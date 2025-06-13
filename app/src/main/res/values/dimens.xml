@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="title_size">22sp</dimen>
+    <dimen name="text_size">22sp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="left_right_margin">16dp</dimen>
+    <dimen name="settings_top_bottom_padding">21dp</dimen>
+    <dimen name="top_bottom_margin">24dp</dimen>
+    <dimen name="icon_padding">10dp</dimen>
+    <dimen name="corner_radius">16dp</dimen>
+    <dimen name="small_corner_radius">8dp</dimen>
+    <dimen name="icon_margin">12dp</dimen>
+    <dimen name="layout_height_weight_using">0dp</dimen>
+    <dimen name="image_button_size">48dp</dimen>
+    <dimen name="top_layout_height">56dp</dimen>
+    <dimen name="margin_start_end">12dp</dimen>
+    <dimen name="left_right_padding">14dp</dimen>
+</resources>

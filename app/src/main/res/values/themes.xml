@@ -3,6 +3,18 @@
     <style name="Base.Theme.Playlist_Maker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/light_gray_background_color</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/bright_blue</item>
+        <item name="colorSecondaryVariant">@color/light_blue_background_color</item>
+        <item name="colorOnSecondary">@color/design_default_color_on_secondary</item>
+        <item name="colorControlActivated">@color/bright_blue</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/white</item>
+        <!-- Customize your theme here. -->
     </style>
 
     <style name="Theme.Playlist_Maker" parent="Base.Theme.Playlist_Maker" />
