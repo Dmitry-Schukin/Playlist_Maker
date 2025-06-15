@@ -21,4 +21,10 @@
             android:id="@+id/clearIcon"
             style="@style/clear_close_cancel_image_view" />
     </com.google.android.material.card.MaterialCardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/track_search_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/top_bottom_margin"/>
 </LinearLayout>
