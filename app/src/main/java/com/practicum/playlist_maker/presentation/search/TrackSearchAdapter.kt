@@ -10,10 +10,8 @@ class TrackSearchAdapter (
     private val trackList: List<Track>
 ) : RecyclerView.Adapter<TrackSearchViewHolder> (){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackSearchViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.track_list_model, parent, false)
-        return TrackSearchViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackSearchViewHolder = TrackSearchViewHolder(parent)
+
 
     override fun onBindViewHolder(holder: TrackSearchViewHolder, position: Int) {
         holder.bind(trackList[position])
