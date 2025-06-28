@@ -15,7 +15,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.practicum.playlist_maker.model.Track
+import com.practicum.playlist_maker.presentation.search.TrackSearchAdapter
 
 
 class SearchActivity : AppCompatActivity() {
@@ -63,6 +67,14 @@ class SearchActivity : AppCompatActivity() {
 
         inputEditText.addTextChangedListener(simpleTextWatcher)
         inputEditText.setText(savedValue)
+
+        //region Creating a list of tracks by using RecyclerView
+        val recyclerView = findViewById<RecyclerView>(R.id.track_search_recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL, false)
+
+        val searchAdapter = TrackSearchAdapter(trackListCreatorMockObject())
+        recyclerView.adapter = searchAdapter
+        //endregion
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -76,5 +88,29 @@ class SearchActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         savedValue = savedInstanceState.getString(EDIT_TEXT, TEXT_DEF)
+    }
+
+    private fun trackListCreatorMockObject(): MutableList<Track> {
+        val first = Track(getStringFromXml(applicationContext,R.string.first_track), getStringFromXml(applicationContext,R.string.first_group),
+            getStringFromXml(applicationContext,R.string.first_track_time), getStringFromXml(applicationContext,R.string.first_album_url))
+
+        val second = Track(getStringFromXml(applicationContext,R.string.second_track), getStringFromXml(applicationContext,R.string.second_group),
+            getStringFromXml(applicationContext,R.string.second_track_time), getStringFromXml(applicationContext,R.string.second_album_url))
+
+        val third = Track(getStringFromXml(applicationContext,R.string.third_track), getStringFromXml(applicationContext,R.string.third_group),
+            getStringFromXml(applicationContext,R.string.third_track_time), getStringFromXml(applicationContext,R.string.third_album_url))
+
+        val fourth= Track(getStringFromXml(applicationContext,R.string.fourth_track), getStringFromXml(applicationContext,R.string.fourth_group),
+            getStringFromXml(applicationContext,R.string.fourth_track_time), getStringFromXml(applicationContext,R.string.fourth_album_url))
+
+        val fifth= Track(getStringFromXml(applicationContext,R.string.fifth_track), getStringFromXml(applicationContext,R.string.fifth_group),
+            getStringFromXml(applicationContext,R.string.fifth_track_time), getStringFromXml(applicationContext,R.string.fifth_album_url))
+
+        val trackList: MutableList<Track> = mutableListOf(first,second,third,fourth,fifth)
+
+        return trackList
+    }
+    fun getStringFromXml(context: Context, resId: Int): String {
+        return context.resources.getString(resId)
     }
 }
