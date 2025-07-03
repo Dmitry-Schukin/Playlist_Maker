@@ -22,9 +22,37 @@
             style="@style/clear_close_cancel_image_view" />
     </com.google.android.material.card.MaterialCardView>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/track_search_recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/top_bottom_margin"/>
+        android:layout_marginTop="@dimen/top_bottom_margin">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/track_search_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/track_list" />
+
+        <ImageView
+            android:id="@+id/placeholder_icon_nothing"
+            style="@style/placeholder_icon_nothing_was_search" />
+        <ImageView
+            android:id="@+id/placeholder_icon_smth_wrong"
+            style="@style/placeholder_icon_smth_went_wrong" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_marginTop="214dp">
+            <TextView
+                android:id="@+id/placeholder_message"
+                style="@style/placeholder_text_view"
+                android:textAppearance="@style/placeholder_message_text_appearance"/>
+            <Button
+                android:id="@+id/update_track_list_button"
+                style="@style/update_button" />
+
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

@@ -5,12 +5,18 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -19,11 +25,41 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.practicum.playlist_maker.model.Track
+import com.practicum.playlist_maker.network.track_list.TrackApi
+import com.practicum.playlist_maker.network.track_list.TrackResponse
 import com.practicum.playlist_maker.presentation.search.TrackSearchAdapter
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Query
 
 
 class SearchActivity : AppCompatActivity() {
     private var savedValue: String = TEXT_DEF
+
+    private val trackBaseUrl = "https://itunes.apple.com"
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(trackBaseUrl)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val trackService = retrofit.create(TrackApi::class.java)
+    private val tracks = ArrayList<Track>()
+
+    private val searchAdapter = TrackSearchAdapter()
+
+    private lateinit var backClickEvent:MaterialToolbar
+    private lateinit var inputEditText: EditText
+    private lateinit var clearButton: ImageView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var placeholderMessage: TextView
+    private lateinit var placeholderIconSearchNothing: ImageView
+    private lateinit var placeholderIconNoConnection: ImageView
+    private lateinit var updateButton: Button
+
+
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,11 +72,16 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        val backClickEvent = findViewById<MaterialToolbar>(R.id.search_material_toolbar)
-        val inputEditText = findViewById<EditText>(R.id.input_edit_text)
-        val clearButton = findViewById<ImageView>(R.id.clearIcon)
+        backClickEvent = findViewById<MaterialToolbar>(R.id.search_material_toolbar)
+        inputEditText = findViewById<EditText>(R.id.input_edit_text)
+        clearButton = findViewById<ImageView>(R.id.clearIcon)
+        placeholderMessage = findViewById<TextView>(R.id.placeholder_message)
+        placeholderIconSearchNothing = findViewById<ImageView>(R.id.placeholder_icon_nothing)
+        placeholderIconNoConnection= findViewById<ImageView>(R.id.placeholder_icon_smth_wrong)
+        updateButton = findViewById<Button>(R.id.update_track_list_button)
 
         clearButton.visibility = if(savedValue.isEmpty()) View.GONE else View.VISIBLE
+        placeholderDisable()
 
         backClickEvent.setNavigationOnClickListener {
             finish()
@@ -50,8 +91,13 @@ class SearchActivity : AppCompatActivity() {
             inputEditText.setText("")
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
+            tracks.clear()
+            searchAdapter.notifyDataSetChanged()
         }
-
+        updateButton.setOnClickListener {
+            search()
+            placeholderDisable()
+        }
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // empty
@@ -69,12 +115,23 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setText(savedValue)
 
         //region Creating a list of tracks by using RecyclerView
-        val recyclerView = findViewById<RecyclerView>(R.id.track_search_recycler_view)
+        recyclerView = findViewById<RecyclerView>(R.id.track_search_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL, false)
 
-        val searchAdapter = TrackSearchAdapter(trackListCreatorMockObject())
+        searchAdapter.trackList = tracks
         recyclerView.adapter = searchAdapter
         //endregion
+
+        //region
+        inputEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ) {
+                search()
+                true
+            }
+                false
+        }
+        //endregion
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -91,20 +148,20 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun trackListCreatorMockObject(): MutableList<Track> {
-        val first = Track(getStringFromXml(applicationContext,R.string.first_track), getStringFromXml(applicationContext,R.string.first_group),
-            getStringFromXml(applicationContext,R.string.first_track_time), getStringFromXml(applicationContext,R.string.first_album_url))
+        val first = Track(getStringFromXml(applicationContext,R.string.first_group),getStringFromXml(applicationContext,R.string.first_track),
+            301000, getStringFromXml(applicationContext,R.string.first_album_url))
 
-        val second = Track(getStringFromXml(applicationContext,R.string.second_track), getStringFromXml(applicationContext,R.string.second_group),
-            getStringFromXml(applicationContext,R.string.second_track_time), getStringFromXml(applicationContext,R.string.second_album_url))
+        val second = Track(getStringFromXml(applicationContext,R.string.second_group),getStringFromXml(applicationContext,R.string.second_track),
+            275000, getStringFromXml(applicationContext,R.string.second_album_url))
 
-        val third = Track(getStringFromXml(applicationContext,R.string.third_track), getStringFromXml(applicationContext,R.string.third_group),
-            getStringFromXml(applicationContext,R.string.third_track_time), getStringFromXml(applicationContext,R.string.third_album_url))
+        val third = Track(getStringFromXml(applicationContext,R.string.third_group),getStringFromXml(applicationContext,R.string.third_track),
+            250000, getStringFromXml(applicationContext,R.string.third_album_url))
 
-        val fourth= Track(getStringFromXml(applicationContext,R.string.fourth_track), getStringFromXml(applicationContext,R.string.fourth_group),
-            getStringFromXml(applicationContext,R.string.fourth_track_time), getStringFromXml(applicationContext,R.string.fourth_album_url))
+        val fourth= Track(getStringFromXml(applicationContext,R.string.fourth_group), getStringFromXml(applicationContext,R.string.fourth_track),
+            333000, getStringFromXml(applicationContext,R.string.fourth_album_url))
 
-        val fifth= Track(getStringFromXml(applicationContext,R.string.fifth_track), getStringFromXml(applicationContext,R.string.fifth_group),
-            getStringFromXml(applicationContext,R.string.fifth_track_time), getStringFromXml(applicationContext,R.string.fifth_album_url))
+        val fifth= Track(getStringFromXml(applicationContext,R.string.fifth_group), getStringFromXml(applicationContext,R.string.fifth_track),
+            303000, getStringFromXml(applicationContext,R.string.fifth_album_url))
 
         val trackList: MutableList<Track> = mutableListOf(first,second,third,fourth,fifth)
 
@@ -112,5 +169,56 @@ class SearchActivity : AppCompatActivity() {
     }
     fun getStringFromXml(context: Context, resId: Int): String {
         return context.resources.getString(resId)
+    }
+    private fun search() {
+        trackService.getTrack(inputEditText.text.toString())
+            .enqueue(object : Callback<TrackResponse> {
+                override fun onResponse(call: Call<TrackResponse>,
+                                        response: Response<TrackResponse>) {
+                    when (response.code()) {
+                        200 -> {
+                            if (response.body()?.songs?.isNotEmpty() == true) {
+                                tracks.clear()
+                                tracks.addAll(response.body()?.songs!!)
+                                searchAdapter.notifyDataSetChanged()
+                                showMessage("")
+                            } else {
+                                showMessage(getString(R.string.nothing_was_found))
+                            }
+                        }
+                        else -> showMessage(getString(R.string.problem_with_network))
+                    }
+                }
+
+                override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                    showMessage(getString(R.string.problem_with_network))
+                }
+            })
+    }
+
+    private fun showMessage(text: String) {
+        if (text.isNotEmpty()) {
+            placeholderMessage.visibility = View.VISIBLE
+
+            tracks.clear()
+            searchAdapter.notifyDataSetChanged()
+
+            placeholderMessage.text = text
+
+            if(text.equals(getStringFromXml(applicationContext, R.string.problem_with_network))) {
+                placeholderIconNoConnection.visibility= View.VISIBLE
+                updateButton.visibility = View.VISIBLE
+            }else if (text.equals(getStringFromXml(applicationContext, R.string.nothing_was_found))) {
+                placeholderIconSearchNothing.visibility = View.VISIBLE
+            }
+        } else {
+            placeholderDisable()
+        }
+    }
+    fun placeholderDisable(){
+        placeholderMessage.visibility = View.GONE
+        placeholderIconNoConnection.visibility= View.GONE
+        placeholderIconSearchNothing.visibility= View.GONE
+        updateButton.visibility = View.GONE
     }
 }
