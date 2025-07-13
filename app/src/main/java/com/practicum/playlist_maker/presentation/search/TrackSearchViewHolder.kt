@@ -13,6 +13,8 @@ import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.model.Track
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TrackSearchViewHolder (parent: ViewGroup) :
     RecyclerView.ViewHolder(LayoutInflater.from(parent.context)
@@ -41,7 +43,7 @@ class TrackSearchViewHolder (parent: ViewGroup) :
             .into(trackImage)
         vocalistName.text = model.artistName
         songName.text = model.trackName
-        trackTime.text = model.trackTime
+        trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis.toLong())
     }
 
 }
