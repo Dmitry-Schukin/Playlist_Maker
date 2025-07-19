@@ -24,4 +24,5 @@
     <dimen name="icon_size_120">120dp</dimen>
     <dimen name="elevation_0">0dp</dimen>
     <dimen name="margin_8">8dp</dimen>
+    <dimen name="model_height">61dp</dimen>
 </resources>

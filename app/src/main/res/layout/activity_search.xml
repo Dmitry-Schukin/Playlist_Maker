@@ -52,7 +52,26 @@
             <Button
                 android:id="@+id/update_track_list_button"
                 style="@style/update_button" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/history_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="6dp">
+            <TextView
+                android:id="@+id/history_title_text_view"
+                android:textAppearance="@style/history_text_appearance"
+                style="@style/history_text_view"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/history_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <Button
+                android:id="@+id/clear_history_button"
+                style = "@style/clear_history_button" />
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>
