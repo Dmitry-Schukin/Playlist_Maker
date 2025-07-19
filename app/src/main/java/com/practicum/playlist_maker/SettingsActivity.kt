@@ -15,6 +15,12 @@ import androidx.core.net.toUri
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var nightModeSwitch: SwitchMaterial
+    private lateinit var backClickEvent: MaterialToolbar
+    private lateinit var shareApp: MaterialTextView
+    private lateinit var sendMessage: MaterialTextView
+    private lateinit var showAgreement: MaterialTextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -24,19 +30,23 @@ class SettingsActivity : AppCompatActivity() {
             view.updatePadding(top = statusBar.top)
             insets
         }
-        val backClickEvent = findViewById<MaterialToolbar>(R.id.settings_material_toolbar)
+
+
+        backClickEvent = findViewById<MaterialToolbar>(R.id.settings_material_toolbar)
+        shareApp = findViewById<MaterialTextView>(R.id.share_text_view)
+        sendMessage = findViewById<MaterialTextView>(R.id.support_text_view)
+        showAgreement = findViewById<MaterialTextView>(R.id.agreement_text_view)
+        nightModeSwitch = findViewById<SwitchMaterial>(R.id.dark_theme_switch_material)
+
         backClickEvent.setNavigationOnClickListener {
             finish()
         }
-        val shareApp = findViewById<MaterialTextView>(R.id.share_text_view)
         shareApp.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.setType("text/plain")
             shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.url_practicum_course))
             startActivity(shareIntent)
         }
-
-        val sendMessage = findViewById<MaterialTextView>(R.id.support_text_view)
         sendMessage.setOnClickListener{
             val sendMessageIntent = Intent(Intent.ACTION_SENDTO)
             sendMessageIntent.data = "mailto:".toUri()
@@ -45,22 +55,19 @@ class SettingsActivity : AppCompatActivity() {
             sendMessageIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.mail_text))
             startActivity(sendMessageIntent)
         }
-
-        val showAgreement = findViewById<MaterialTextView>(R.id.agreement_text_view)
         showAgreement.setOnClickListener {
             val url = getString(R.string.url_practicum_offer).toUri()
             val intent = Intent(Intent.ACTION_VIEW, url)
             startActivity(intent)
         }
-
-        val nightModeSwitch = findViewById<SwitchMaterial>(R.id.dark_theme_switch_material)
-        nightModeSwitch.setOnClickListener{
-            if(nightModeSwitch.isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-            else{
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
+        updateSwitch((applicationContext as App).darkTheme)
+        nightModeSwitch.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
         }
+
+    }
+    fun updateSwitch(darkTheme: Boolean) {
+        if(darkTheme) nightModeSwitch.isChecked=true
+        else nightModeSwitch.isChecked=false
     }
 }

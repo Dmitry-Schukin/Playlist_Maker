@@ -215,25 +215,27 @@
     <style name="placeholder_icon_smth_went_wrong" parent="placeholder_icon">
         <item name="android:src">@drawable/smth_went_wrong_placeholder</item>
     </style>
-    <style name="placeholder_message_text_appearance">
+    <style name="message_text_appearance">
         <item name="android:textSize">@dimen/text_size_19</item>
         <item name="fontFamily">@font/ys_display_medium</item>
         <item name="android:letterSpacing">0</item>
-        <item name="android:textFontWeight">400</item>
         <item name="android:textColor">@color/dark_color</item>
+        <item name="textAllCaps">false</item>
+    </style>
+    <style name="placeholder_message_text_appearance" parent="message_text_appearance">
+        <item name="android:textFontWeight">400</item>
     </style>
     <style name="placeholder_text_view">
         <item name="android:layout_width">312dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">center</item>
     </style>
-    <style name="update_button">
+    <style name="settings_supporting_button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_marginTop">26dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:backgroundTint">@color/dark_color</item>
-        <item name="android:text">@string/update</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textSize">@dimen/text_size_14</item>
@@ -241,6 +243,23 @@
         <item name="android:elevation">@dimen/elevation_0</item>
         <item name="android:letterSpacing">0</item>
         <item name="cornerRadius">54dp</item>
+    </style>
+    <style name="update_button" parent="settings_supporting_button">
+        <item name="android:text">@string/update</item>
+    </style>
+    <!-- Атрибуты истории треков на странице поиска песен-->
+    <style name="clear_history_button" parent="settings_supporting_button">
+        <item name="android:text">@string/clear_history</item>
+        <item name="android:layout_marginBottom">30dp</item>
+    </style>
+    <style name="history_text_appearance" parent="message_text_appearance">
+        <item name="android:textFontWeight">500</item>
+    </style>
+    <style name="history_text_view">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:text">@string/you_searched</item>
     </style>
 </resources>
 

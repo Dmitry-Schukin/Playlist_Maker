@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.model.Track
 
-class TrackSearchAdapter () : RecyclerView.Adapter<TrackSearchViewHolder> (){
+class TrackSearchAdapter (val clickListener: TrackClickListener) : RecyclerView.Adapter<TrackSearchViewHolder> (){
 
     var trackList = ArrayList<Track>()
 
@@ -15,9 +15,13 @@ class TrackSearchAdapter () : RecyclerView.Adapter<TrackSearchViewHolder> (){
 
     override fun onBindViewHolder(holder: TrackSearchViewHolder, position: Int) {
         holder.bind(trackList[position])
+        holder.itemView.setOnClickListener { clickListener.onTrackClick(trackList.get(position)) }
     }
 
     override fun getItemCount(): Int {
         return trackList.size
+    }
+    fun interface TrackClickListener {
+        fun onTrackClick(tracks: Track)
     }
 }

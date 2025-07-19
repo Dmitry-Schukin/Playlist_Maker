@@ -18,6 +18,8 @@
     <string name="update">Обновить</string>
     <string name="problem_with_network">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="nothing_was_found">Ничего не нашлось</string>
+    <string name="you_searched">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 
     <!--Mock-object strings-->
     <string name="first_track">Smells Like Teen Spirit</string>
