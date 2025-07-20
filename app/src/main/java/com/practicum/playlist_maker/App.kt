@@ -19,7 +19,6 @@ class App: Application() {
         val settingsFromSharedPrefs = sharedPrefs.getBoolean(EDIT_TEXT_KEY, isCurrentThemeDark())
         darkTheme = settingsFromSharedPrefs
         switchTheme(darkTheme)
-
     }
     fun switchTheme(darkThemeEnabled: Boolean) {
         darkTheme = darkThemeEnabled

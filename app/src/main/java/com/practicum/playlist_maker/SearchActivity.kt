@@ -3,12 +3,9 @@ package com.practicum.playlist_maker
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -17,11 +14,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -29,7 +23,6 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.gson.Gson
 import com.practicum.playlist_maker.model.Track
 import com.practicum.playlist_maker.network.track_list.TrackApi
 import com.practicum.playlist_maker.network.track_list.TrackResponse
@@ -40,7 +33,6 @@ import retrofit2.Retrofit
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Query
 
 
 
@@ -253,37 +245,37 @@ class SearchActivity : AppCompatActivity() {
     }
     private fun showTrackHistory() {
         val history = SearchHistory(historySharedPreferences)
-        val json = history.getHistoryJson()
-        historyElementsVisible()
-        if (json.isNotEmpty()) {
-            historyTrackList = ArrayList(history.createTracksListFromJson(json).toList())
+        val trackListFromSharedPrefs = history.createTracksListFromJson()
+        if (trackListFromSharedPrefs.isNotEmpty()) {
+            historyElementsVisible()
+            historyTrackList = trackListFromSharedPrefs
 
             historyRecyclerView = findViewById<RecyclerView>(R.id.history_recycler_view)
             historyRecyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL, false)
             historyAdapter.trackList = historyTrackList
             historyRecyclerView.adapter = historyAdapter
         } else {
-            clearHistoryButton.visibility= View.GONE
+            historyElementsDisable()
         }
     }
     //region Elements activity methods
     private fun placeholderDisable(){
-        placeholderMessage.visibility = View.GONE
-        placeholderIconNoConnection.visibility= View.GONE
-        placeholderIconSearchNothing.visibility= View.GONE
-        updateButton.visibility = View.GONE
+        placeholderMessage.isVisible=false
+        placeholderIconNoConnection.isVisible=false
+        placeholderIconSearchNothing.isVisible=false
+        updateButton.isVisible=false
     }
     private fun historyElementsDisable(){
-        historyLayout.visibility = View.GONE
-        historyTitle.visibility = View.GONE
-        historyRecyclerView.visibility= View.GONE
-        clearHistoryButton.visibility= View.GONE
+        historyLayout.isVisible=false
+        historyTitle.isVisible=false
+        historyRecyclerView.isVisible=false
+        clearHistoryButton.isVisible=false
     }
     private fun historyElementsVisible(){
-        historyLayout.visibility = View.VISIBLE
-        historyTitle.visibility = View.VISIBLE
-        historyRecyclerView.visibility= View.VISIBLE
-        clearHistoryButton.visibility= View.VISIBLE
+        historyLayout.isVisible=true
+        historyTitle.isVisible=true
+        historyRecyclerView.isVisible=true
+        clearHistoryButton.isVisible=true
     }
     //endregion
 

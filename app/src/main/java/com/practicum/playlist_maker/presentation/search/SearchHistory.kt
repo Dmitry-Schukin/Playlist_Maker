@@ -30,36 +30,35 @@ class SearchHistory (val sharedPrefsTrackHist: SharedPreferences) {
             trackList.size<10, поэтому переходим в else,удаляем 10 элемент и добавляем новый трек;
                 -Количество треков = 10 и трек повторяется - после удаления становится 9 треков, добавляем в
             начало повторившийся трек, список снова = 10.*/
-        val json = sharedPrefsTrackHist.getString(TRACK_TEXT_KEY,"").toString()
-        var trackList = mutableListOf<Track>()
-        if (!json.isNullOrEmpty()) {
-            trackList = ArrayList(createTracksListFromJson(json).toList())
-
-            val iterator = trackList.iterator()//При помощи итератора удаляем из истории трек, если он там присутствует
-            while (iterator.hasNext()) {
-                val trackIterator = iterator.next()
-                if (trackIterator.trackId == track.trackId) {
-                    iterator.remove()
-                }
+        var trackList = createTracksListFromJson()
+        val iterator = trackList.iterator()//При помощи итератора удаляем из истории трек, если он там присутствует
+        while (iterator.hasNext()) {
+            val trackIterator = iterator.next()
+            if (trackIterator.trackId == track.trackId) {
+                iterator.remove()
             }
-            if(trackList.size<10){
-                trackList.add(0, track)
-            }else {
-                trackList.removeAt(9)
-                trackList.add(0, track)
-            }
+        }
+        if(trackList.size<10){
+            trackList.add(0, track)
+        }else {
+            trackList.removeAt(9)
+            trackList.add(0, track)
         }
         sharedPrefsTrackHist.edit()
             .putString(TRACK_TEXT_KEY, createJsonFromTracksList(trackList.toTypedArray()))
             .apply()
     }
-
-    fun getHistoryJson():String{
-        val json = sharedPrefsTrackHist.getString(TRACK_TEXT_KEY,"").toString()
-        return json
-    }
-    fun createTracksListFromJson(json: String): Array<Track> {
-        return Gson().fromJson(json, Array<Track>::class.java)
+    fun createTracksListFromJson(): ArrayList<Track> {
+        var json = sharedPrefsTrackHist.getString(TRACK_TEXT_KEY,"").toString()
+        if(json.isEmpty()){
+            sharedPrefsTrackHist.edit()
+            .putString(TRACK_TEXT_KEY, createJsonFromTracksList(emptyArray()))
+            .apply()
+            json = sharedPrefsTrackHist.getString(TRACK_TEXT_KEY,"").toString()
+        }
+        val array = Gson().fromJson(json, Array<Track>::class.java)
+        val historyTrackList = ArrayList(array.toList())
+        return historyTrackList
     }
     fun createJsonFromTracksList(tracks: Array<Track>): String {
         return Gson().toJson(tracks)
