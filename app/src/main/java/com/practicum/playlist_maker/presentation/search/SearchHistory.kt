@@ -1,10 +1,13 @@
 package com.practicum.playlist_maker.presentation.search
 
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.content.SharedPreferences
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.practicum.playlist_maker.AudioPlayerActivity
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.SearchActivity
 import com.practicum.playlist_maker.model.Track

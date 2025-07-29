@@ -20,20 +20,37 @@
     <string name="nothing_was_found">Ничего не нашлось</string>
     <string name="you_searched">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
+    <string name="cover_image">Альбом</string>
+    <string name="duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="genre">Жанр</string>
+    <string name="year">Год</string>
+    <string name="country">Страна</string>
+    <string name="add_to_favorites">Добавить в избранное</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="play">Включить трек</string>
+
 
     <!--Mock-object strings-->
     <string name="first_track">Smells Like Teen Spirit</string>
     <string name="first_group">Nirvana</string>
     <string name="first_track_time">05:01</string>
     <string name="first_album_url">https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg</string>
+    <string name="first_album">Nevermind</string>
+    <string name="first_release_date">"1990-09-10T12:00:00Z"</string>
+    <string name="first_genre">Rock</string>
+    <string name="country_USA">United States of America</string>
     <string name="second_track">Billie Jean</string>
     <string name="second_group">Michael Jackson is the best of the best singers in all over the world in my humble opinion</string>
     <string name="second_track_time">04:35</string>
     <string name="second_album_url">https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg</string>
+    <string name="second_release_date">"1983-01-03T12:00:00Z"</string>
+    <string name="second_genre">Post-disco · funk · dance-pop</string>
     <string name="third_track">Stayin\' Alive</string>
     <string name="third_group">Bee Gees</string>
     <string name="third_track_time">04:10</string>
     <string name="third_album_url">https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg</string>
+    <string name="third_genre">Disco</string>
     <string name="fourth_track">Whole Lotta Love</string>
     <string name="fourth_group">Led Zeppelin</string>
     <string name="fourth_track_time">05:33</string>
