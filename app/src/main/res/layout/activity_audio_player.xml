@@ -8,8 +8,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/audio_player_constraint_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="@style/constraint_layout_style">
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/leftBorder"
             android:orientation="vertical"
@@ -40,7 +39,8 @@
             app:layout_constraintStart_toStartOf="parent">
             <ImageView
                 android:id="@+id/big_album_icon"
-                style="@style/track_list_album_icon" />
+                style="@style/track_list_album_icon"
+                android:contentDescription="@string/cover_image" />
         </androidx.cardview.widget.CardView>
         <TextView
             android:id="@+id/song_name_audio_player"

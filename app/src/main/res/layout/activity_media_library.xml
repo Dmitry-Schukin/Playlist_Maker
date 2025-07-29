@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/media_screen_layout"
-    android:layout_width="match_parent"
+    style="@style/constraint_layout_style"
     android:layout_height="match_parent"
     tools:context=".MediaLibraryActivity">
 </androidx.constraintlayout.widget.ConstraintLayout>

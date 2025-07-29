@@ -13,7 +13,17 @@
     <style name="general_view_linear_layout_style" parent="linear_layout_style">
         <item name="android:background">@color/white</item>
     </style>
-
+    <style name="track_list_model_linear_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/model_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@color/white</item>
+    </style>
+    <style name="constraint_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/white</item>
+    </style>
     <!-- Атрибуты заголовка MaterialToolbar-->
     <style name="screens_title">
         <item name="android:textSize">22sp</item>
