@@ -2,6 +2,7 @@ package com.practicum.playlist_maker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
@@ -23,6 +24,7 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.gson.Gson
 import com.practicum.playlist_maker.model.Track
 import com.practicum.playlist_maker.network.track_list.TrackApi
 import com.practicum.playlist_maker.network.track_list.TrackResponse
@@ -57,9 +59,10 @@ class SearchActivity : AppCompatActivity() {
     private val searchAdapter = TrackSearchAdapter {
         val historySharedPref = SearchHistory(getSharedPreferences(SearchHistory.TRACK_HISTORY, MODE_PRIVATE))
         historySharedPref.addTrackToHistoryList(it)
+        showTrackAudioPlayer(it)
     }
     private val historyAdapter = TrackSearchAdapter{
-        testTrackMethod(it)
+        showTrackAudioPlayer(it)
     }
 
     private lateinit var backClickEvent:MaterialToolbar
@@ -282,24 +285,33 @@ class SearchActivity : AppCompatActivity() {
     //region Test methods
     private fun trackListCreatorMockObject(): MutableList<Track> {
         val first = Track("1",getStringFromXml(applicationContext,R.string.first_group),getStringFromXml(applicationContext,R.string.first_track),
-            301000, getStringFromXml(applicationContext,R.string.first_album_url))
+            301000, getStringFromXml(applicationContext,R.string.first_album_url),getStringFromXml(applicationContext,R.string.first_album),
+            getStringFromXml(applicationContext,R.string.first_release_date),getStringFromXml(applicationContext,R.string.first_genre),
+            getStringFromXml(applicationContext,R.string.country_USA))
 
         val second = Track("2",getStringFromXml(applicationContext,R.string.second_group),getStringFromXml(applicationContext,R.string.second_track),
-            275000, getStringFromXml(applicationContext,R.string.second_album_url))
+            275000, getStringFromXml(applicationContext,R.string.second_album_url),"",getStringFromXml(applicationContext,R.string.second_release_date),
+            getStringFromXml(applicationContext,R.string.second_genre),getStringFromXml(applicationContext,R.string.country_USA))
 
         val third = Track("3",getStringFromXml(applicationContext,R.string.third_group),getStringFromXml(applicationContext,R.string.third_track),
-            250000, getStringFromXml(applicationContext,R.string.third_album_url))
+            250000, getStringFromXml(applicationContext,R.string.third_album_url),"","",getStringFromXml(applicationContext,R.string.third_genre),
+            getStringFromXml(applicationContext,R.string.country_USA))
 
         val fourth= Track("4",getStringFromXml(applicationContext,R.string.fourth_group), getStringFromXml(applicationContext,R.string.fourth_track),
-            333000, getStringFromXml(applicationContext,R.string.fourth_album_url))
+            333000, getStringFromXml(applicationContext,R.string.fourth_album_url),"","","","")
 
         val fifth= Track("5",getStringFromXml(applicationContext,R.string.fifth_group), getStringFromXml(applicationContext,R.string.fifth_track),
-            303000, getStringFromXml(applicationContext,R.string.fifth_album_url))
+            303000, getStringFromXml(applicationContext,R.string.fifth_album_url),"","","","")
 
         val trackList: MutableList<Track> = mutableListOf(first,second,third,fourth,fifth)
 
         return trackList
     }
-    private fun testTrackMethod(track: Track){}
+    private fun showTrackAudioPlayer(track: Track){
+        val displayIntent = Intent(this, AudioPlayerActivity::class.java)
+        val jsonTrack = Gson().toJson(track)
+        displayIntent.putExtra(AudioPlayerActivity.TRACK_INFORMATION_KEY, jsonTrack)
+        startActivity(displayIntent)
+    }
     //endregion
 }
