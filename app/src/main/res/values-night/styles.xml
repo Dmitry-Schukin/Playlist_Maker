@@ -8,12 +8,22 @@
         <item name="android:theme">@style/Base.Theme.Playlist_Maker</item>
     </style>
     <style name="main_screen_linear_layout_style" parent="linear_layout_style">
-        <item name="background">@color/dark_color</item>
+        <item name="android:background">@color/dark_color</item>
     </style>
     <style name="general_view_linear_layout_style" parent="linear_layout_style">
-        <item name="background">@color/dark_color</item>
+        <item name="android:background">@color/dark_color</item>
     </style>
-
+    <style name="track_list_model_linear_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/model_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@color/dark_color</item>
+    </style>
+    <style name="constraint_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/dark_color</item>
+    </style>
     <!-- Атрибуты заголовка MaterialToolbar-->
     <style name="screens_title">
         <item name="android:textSize">22sp</item>
@@ -38,6 +48,11 @@
     </style>
     <style name="search_material_toolbar_style" parent="material_toolbar_general_size_style">
         <item name="title">@string/search</item>
+        <item name="navigationIcon">@drawable/arrow_back</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="navigationIconTint">@color/white</item>
+    </style>
+    <style name="audio_player_toolbar_style" parent="material_toolbar_general_size_style">
         <item name="navigationIcon">@drawable/arrow_back</item>
         <item name="titleTextColor">@color/white</item>
         <item name="navigationIconTint">@color/white</item>
@@ -95,6 +110,7 @@
         <item name="android:text">@string/dark_theme</item>
         <item name="thumbTint">@color/switch_thumb_color</item>
         <item name="trackTint">@color/switch_track_color</item>
+        <item name="switchMinWidth">32dp</item>
     </style>
     <style name="share_text_view_style" parent="settings_screen_menu_style">
         <item name="android:drawableEnd">@drawable/share</item>
@@ -257,5 +273,119 @@
         <item name="android:layout_height">52dp</item>
         <item name="android:gravity">center</item>
         <item name="android:text">@string/you_searched</item>
+    </style>
+    <!-- Атрибуты трека на странице аудиоплейера-->
+    <style name="text_view_song_vocalist_name_audio_player">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <style name="track_list_song_name_audio_player" parent="track_list_song_name">
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+    </style>
+    <style name="track_list_vocalist_audio_player" parent="track_list_song_name">
+        <item name="android:textSize">@dimen/text_size_14</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+    </style>
+    <style name="track_attributes_text">
+        <item name="android:textSize">@dimen/text_size_13</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+    <style name="track_attributes_text_titles" parent="track_attributes_text">
+        <item name="android:textColor">@color/gray_color</item>
+    </style>
+    <style name="track_attributes_text_values" parent="track_attributes_text">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="image_card_view_attributes">
+        <item name="android:layout_width">@dimen/icon_size_312</item>
+        <item name="android:layout_height">@dimen/icon_size_312</item>
+        <item name="android:layout_marginTop">32dp</item>
+        <item name="cardCornerRadius">@dimen/small_corner_radius</item>
+        <item name="cardElevation">@dimen/elevation_0</item>
+        <item name="cardBackgroundColor">@android:color/transparent</item>
+    </style>
+    <style name="text_view_attributes_audio_player">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/padding_margin_9</item>
+        <item name="android:paddingBottom">@dimen/padding_margin_9</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <style name="duration_text" parent="text_view_attributes_audio_player">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginTop">30dp</item>
+        <item name="android:text">@string/duration</item>
+    </style>
+    <style name="album_text" parent="text_view_attributes_audio_player">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:text">@string/album</item>
+    </style>
+    <style name="year_text" parent="text_view_attributes_audio_player">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:text">@string/year</item>
+    </style>
+    <style name="genre_text" parent="text_view_attributes_audio_player">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:text">@string/genre</item>
+    </style>
+    <style name="country_text" parent="text_view_attributes_audio_player">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:text">@string/country</item>
+        <item name="android:paddingBottom">39dp</item>
+    </style>
+    <style name="duration_value" parent="text_view_attributes_audio_player">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_marginTop">30dp</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:layout_marginLeft">@dimen/margin_10</item>
+    </style>
+    <style name="album_value" parent="text_view_attributes_audio_player">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:layout_marginLeft">@dimen/margin_10</item>
+    </style>
+    <style name="year_value" parent="text_view_attributes_audio_player">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:layout_marginLeft">@dimen/margin_10</item>
+    </style>
+    <style name="genre_value" parent="text_view_attributes_audio_player">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:layout_marginLeft">@dimen/margin_10</item>
+    </style>
+    <style name="country_value" parent="text_view_attributes_audio_player">
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:paddingBottom">39dp</item>
+        <item name="android:layout_marginLeft">@dimen/margin_10</item>
+    </style>
+    <style name="button_onto_audio_payer">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:backgroundTint">@color/dark_color</item>
+        <item name="android:padding">0dp</item>
+    </style>
+    <style name="add_to_playlist_button" parent="button_onto_audio_payer">
+        <item name="android:src">@drawable/add_button_night</item>
+        <item name="android:layout_marginTop">@dimen/margin_70</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+    <style name="play_button" parent="button_onto_audio_payer">
+        <item name="android:src">@drawable/play_button_night</item>
+        <item name="android:layout_marginTop">46dp</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+    <style name="add_to_favorite_button" parent="button_onto_audio_payer">
+        <item name="android:src">@drawable/like_button_night</item>
+        <item name="android:layout_marginTop">@dimen/margin_70</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 </resources>

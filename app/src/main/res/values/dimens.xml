@@ -5,6 +5,7 @@
     <dimen name="text_size_16">16sp</dimen>
     <dimen name="text_size_19">19sp</dimen>
     <dimen name="text_size_14">14sp</dimen>
+    <dimen name="text_size_13">13sp</dimen>
     <dimen name="text_size_11">11sp</dimen>
     <dimen name="left_right_margin">16dp</dimen>
     <dimen name="settings_top_bottom_padding">21dp</dimen>
@@ -15,14 +16,20 @@
     <dimen name="track_icon_corner_radius">2dp</dimen>
     <dimen name="icon_margin">12dp</dimen>
     <dimen name="layout_height_and_width_weight_using">0dp</dimen>
+    <dimen name="margin_4">4dp</dimen>
     <dimen name="image_button_size">48dp</dimen>
     <dimen name="top_layout_height">56dp</dimen>
     <dimen name="margin_start_end">12dp</dimen>
     <dimen name="left_right_padding">14dp</dimen>
     <dimen name="track_list_margin_13">13dp</dimen>
+    <dimen name="margin_18">18dp</dimen>
     <dimen name="icon_size_45">45dp</dimen>
     <dimen name="icon_size_120">120dp</dimen>
+    <dimen name="icon_size_312">312dp</dimen>
     <dimen name="elevation_0">0dp</dimen>
     <dimen name="margin_8">8dp</dimen>
+    <dimen name="padding_margin_9">9dp</dimen>
     <dimen name="model_height">61dp</dimen>
+    <dimen name="margin_70">70dp</dimen>
+    <dimen name="margin_10">10dp</dimen>
 </resources>
