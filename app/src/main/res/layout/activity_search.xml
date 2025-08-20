@@ -33,6 +33,10 @@
             android:layout_height="match_parent"
             android:contentDescription="@string/track_list" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/progress_bar_style"/>
+
         <ImageView
             android:id="@+id/placeholder_icon_nothing"
             style="@style/placeholder_icon_nothing_was_search" />

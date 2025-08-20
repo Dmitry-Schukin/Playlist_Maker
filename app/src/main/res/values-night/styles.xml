@@ -23,6 +23,13 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@color/dark_color</item>
+        <item name="android:theme">@style/Base.Theme.Playlist_Maker</item>
+    </style>
+    <style name="scroll_view_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/dark_color</item>
+        <item name="android:theme">@style/Base.Theme.Playlist_Maker</item>
     </style>
     <!-- Атрибуты заголовка MaterialToolbar-->
     <style name="screens_title">
@@ -260,6 +267,15 @@
     <style name="update_button" parent="settings_supporting_button">
         <item name="android:text">@string/update</item>
     </style>
+    <style name="progress_bar_style">
+        <item name="android:layout_width">@dimen/progress_bar_size</item>
+        <item name="android:layout_height">@dimen/progress_bar_size</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">148dp</item>
+        <item name="android:indeterminateTint">@color/bright_blue</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
     <!-- Атрибуты истории треков на странице поиска песен-->
     <style name="clear_history_button" parent="settings_supporting_button">
         <item name="android:text">@string/clear_history</item>
@@ -380,6 +396,11 @@
     </style>
     <style name="play_button" parent="button_onto_audio_payer">
         <item name="android:src">@drawable/play_button_night</item>
+        <item name="android:layout_marginTop">46dp</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+    <style name="pause_button" parent="button_onto_audio_payer">
+        <item name="android:src">@drawable/pause_button_night</item>
         <item name="android:layout_marginTop">46dp</item>
         <item name="android:background">@android:color/transparent</item>
     </style>

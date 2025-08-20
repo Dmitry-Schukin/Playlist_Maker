@@ -29,6 +29,7 @@
     <string name="add_to_favorites">Добавить в избранное</string>
     <string name="add_to_playlist">Добавить в плейлист</string>
     <string name="play">Включить трек</string>
+    <string name="pause">Поставить трек на паузу</string>
 
 
     <!--Mock-object strings-->
@@ -40,24 +41,28 @@
     <string name="first_release_date">"1990-09-10T12:00:00Z"</string>
     <string name="first_genre">Rock</string>
     <string name="country_USA">United States of America</string>
+    <string name="first_preview_url">https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/44/8d/b2/448db2c4-5185-9eb5-66c2-d1e7182687ad/mzaf_14615718485326206820.plus.aac.p.m4a</string>
     <string name="second_track">Billie Jean</string>
     <string name="second_group">Michael Jackson is the best of the best singers in all over the world in my humble opinion</string>
     <string name="second_track_time">04:35</string>
     <string name="second_album_url">https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg</string>
     <string name="second_release_date">"1983-01-03T12:00:00Z"</string>
     <string name="second_genre">Post-disco · funk · dance-pop</string>
+    <string name="second_preview_url">https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/4f/ec/3e/4fec3ef8-c17c-394d-3573-a0a2aabd8889/mzaf_12729007880218988606.plus.aac.p.m4a</string>
     <string name="third_track">Stayin\' Alive</string>
     <string name="third_group">Bee Gees</string>
     <string name="third_track_time">04:10</string>
     <string name="third_album_url">https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg</string>
     <string name="third_genre">Disco</string>
+    <string name="third_preview_url">https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/42/88/4e/42884efe-30d5-d42e-62fe-6da1167691a7/mzaf_4265605239884074043.plus.aac.p.m4a</string>
     <string name="fourth_track">Whole Lotta Love</string>
     <string name="fourth_group">Led Zeppelin</string>
     <string name="fourth_track_time">05:33</string>
     <string name="fourth_album_url">https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg</string>
+    <string name="fourth_preview_url">https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/e2/87/4e/e2874e7b-59a7-f202-0df7-5859ca6c2553/mzaf_5071354127157930167.plus.aac.p.m4a</string>
     <string name="fifth_track">Sweet Child O\'Mine</string>
     <string name="fifth_group">Guns N\' Roses</string>
     <string name="fifth_track_time">05:03</string>
     <string name="fifth_album_url">https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg</string>
-
+    <string name="fifth_preview_url">https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/17/85/a9/1785a9d7-be0d-3ef6-20a3-06563028c2a6/mzaf_11217232726484859087.plus.aac.p.m4a</string>
 </resources>
