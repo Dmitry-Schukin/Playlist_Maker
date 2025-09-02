@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/audio_player_scroll"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    style="@style/scroll_view_style">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/audio_player_constraint_layout"
@@ -76,6 +75,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
         <ImageButton
+            android:id="@+id/pause_button"
+            style="@style/pause_button"
+            android:contentDescription="@string/pause"
+            app:layout_constraintTop_toBottomOf="@id/vocalist_or_group_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone"/>
+        <ImageButton
             android:id="@+id/add_to_favorites"
             style="@style/add_to_favorite_button"
             android:contentDescription="@string/add_to_favorites"
@@ -86,9 +93,9 @@
             android:textAppearance="@style/track_list_vocalist_audio_player"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_4"
+            android:layout_marginTop="@dimen/margin_150"
             tools:text="@string/first_track_time"
-            app:layout_constraintTop_toBottomOf="@id/play_button"
+            app:layout_constraintTop_toBottomOf="@id/vocalist_or_group_name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
         <androidx.constraintlayout.widget.Barrier

@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -14,6 +16,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -42,7 +45,10 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val EDIT_TEXT = "EDIT_TEXT"
         const val TEXT_DEF = ""
+        private const val CLICK_ON_TRACK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_TRACK_DEBOUNCE_DELAY = 2000L
     }
+
 
     private var savedValue: String = TEXT_DEF
 
@@ -57,13 +63,21 @@ class SearchActivity : AppCompatActivity() {
     private var historyTrackList =ArrayList<Track>()
 
     private val searchAdapter = TrackSearchAdapter {
-        val historySharedPref = SearchHistory(getSharedPreferences(SearchHistory.TRACK_HISTORY, MODE_PRIVATE))
-        historySharedPref.addTrackToHistoryList(it)
-        showTrackAudioPlayer(it)
+        if(clickOnTrackDebounce()) {
+            val historySharedPref =
+                SearchHistory(getSharedPreferences(SearchHistory.TRACK_HISTORY, MODE_PRIVATE))
+            historySharedPref.addTrackToHistoryList(it)
+            showTrackAudioPlayer(it)
+        }
     }
     private val historyAdapter = TrackSearchAdapter{
-        showTrackAudioPlayer(it)
+        if(clickOnTrackDebounce()) {
+            showTrackAudioPlayer(it)
+        }
     }
+    private var isClickOnTrackAllowed = true
+    private val mainThreadHandler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { search() }
 
     private lateinit var backClickEvent:MaterialToolbar
     private lateinit var inputEditText: EditText
@@ -78,6 +92,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
     private lateinit var historySharedPreferences: SharedPreferences
+    private lateinit var progressBar: ProgressBar
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,6 +117,7 @@ class SearchActivity : AppCompatActivity() {
         historyRecyclerView = findViewById<RecyclerView>(R.id.history_recycler_view)
         clearHistoryButton = findViewById<Button>(R.id.clear_history_button)
         historySharedPreferences = getSharedPreferences(SearchHistory.TRACK_HISTORY, MODE_PRIVATE)
+        progressBar = findViewById<ProgressBar>(R.id.progressBar)
 
         //region Starting settings for displaying screen elements
         clearButton.visibility = if(savedValue.isEmpty()) View.GONE else View.VISIBLE
@@ -142,14 +158,6 @@ class SearchActivity : AppCompatActivity() {
                 historyElementsDisable()
             }
         }
-        inputEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE ) {
-                search()
-                historyElementsDisable()
-                true
-            }
-            false
-        } //Handling keyboard button presses
         //endregion
 
 
@@ -169,6 +177,7 @@ class SearchActivity : AppCompatActivity() {
                     showTrackHistory()
                 } else {
                     historyElementsDisable()
+                    searchTrackDebounce()
                 }
             }
             override fun afterTextChanged(s: Editable?) {
@@ -201,30 +210,42 @@ class SearchActivity : AppCompatActivity() {
         return context.resources.getString(resId)
     }
     private fun search() {
-        trackService.getTrack(inputEditText.text.toString())
-            .enqueue(object : Callback<TrackResponse> {
-                override fun onResponse(call: Call<TrackResponse>,
-                                        response: Response<TrackResponse>) {
-                    if(response.isSuccessful) {
-                        val songs = response.body()?.songs
-                        if (songs?.isNotEmpty() == true) {
-                            tracks.clear()
-                            tracks.addAll(songs)
-                            searchAdapter.notifyDataSetChanged()
-                            showMessage("")
+        if(inputEditText.text.isNotEmpty()) {
+
+            progressBar.isVisible=true
+            recyclerView.isVisible=false
+            placeholderDisable()
+
+            trackService.getTrack(inputEditText.text.toString())
+                .enqueue(object : Callback<TrackResponse> {
+                    override fun onResponse(
+                        call: Call<TrackResponse>,
+                        response: Response<TrackResponse>
+                    ) {
+                        progressBar.isVisible=false
+                        if (response.isSuccessful) {
+                            val songs = response.body()?.songs
+                            if (songs?.isNotEmpty() == true) {
+                                tracks.clear()
+                                recyclerView.isVisible=true
+                                tracks.addAll(songs)
+                                searchAdapter.notifyDataSetChanged()
+                                showMessage("")
                             } else {
                                 showMessage(getString(R.string.nothing_was_found))
                             }
-                    } else {
-                        showMessage(getString(R.string.problem_with_network))
+                        } else {
+                            showMessage(getString(R.string.problem_with_network))
+                        }
+
                     }
 
-                }
-
-                override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                    showMessage(getString(R.string.problem_with_network))
-                }
-            })
+                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                        progressBar.isVisible=false
+                        showMessage(getString(R.string.problem_with_network))
+                    }
+                })
+        }
     }
 
     private fun showMessage(text: String) {
@@ -261,6 +282,18 @@ class SearchActivity : AppCompatActivity() {
             historyElementsDisable()
         }
     }
+    private fun clickOnTrackDebounce() : Boolean {
+        val current = isClickOnTrackAllowed
+        if (isClickOnTrackAllowed) {
+            isClickOnTrackAllowed = false
+            mainThreadHandler.postDelayed({ isClickOnTrackAllowed = true }, CLICK_ON_TRACK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+    private fun searchTrackDebounce() {
+        mainThreadHandler.removeCallbacks(searchRunnable)
+        mainThreadHandler.postDelayed(searchRunnable, SEARCH_TRACK_DEBOUNCE_DELAY)
+    }
     //region Elements activity methods
     private fun placeholderDisable(){
         placeholderMessage.isVisible=false
@@ -287,21 +320,24 @@ class SearchActivity : AppCompatActivity() {
         val first = Track("1",getStringFromXml(applicationContext,R.string.first_group),getStringFromXml(applicationContext,R.string.first_track),
             301000, getStringFromXml(applicationContext,R.string.first_album_url),getStringFromXml(applicationContext,R.string.first_album),
             getStringFromXml(applicationContext,R.string.first_release_date),getStringFromXml(applicationContext,R.string.first_genre),
-            getStringFromXml(applicationContext,R.string.country_USA))
+            getStringFromXml(applicationContext,R.string.country_USA),getStringFromXml(applicationContext,R.string.first_preview_url))
 
         val second = Track("2",getStringFromXml(applicationContext,R.string.second_group),getStringFromXml(applicationContext,R.string.second_track),
             275000, getStringFromXml(applicationContext,R.string.second_album_url),"",getStringFromXml(applicationContext,R.string.second_release_date),
-            getStringFromXml(applicationContext,R.string.second_genre),getStringFromXml(applicationContext,R.string.country_USA))
+            getStringFromXml(applicationContext,R.string.second_genre),getStringFromXml(applicationContext,R.string.country_USA),
+            getStringFromXml(applicationContext,R.string.second_preview_url))
 
         val third = Track("3",getStringFromXml(applicationContext,R.string.third_group),getStringFromXml(applicationContext,R.string.third_track),
             250000, getStringFromXml(applicationContext,R.string.third_album_url),"","",getStringFromXml(applicationContext,R.string.third_genre),
-            getStringFromXml(applicationContext,R.string.country_USA))
+            getStringFromXml(applicationContext,R.string.country_USA),getStringFromXml(applicationContext,R.string.third_preview_url))
 
         val fourth= Track("4",getStringFromXml(applicationContext,R.string.fourth_group), getStringFromXml(applicationContext,R.string.fourth_track),
-            333000, getStringFromXml(applicationContext,R.string.fourth_album_url),"","","","")
+            333000, getStringFromXml(applicationContext,R.string.fourth_album_url),"","","","",
+            getStringFromXml(applicationContext,R.string.fourth_preview_url))
 
         val fifth= Track("5",getStringFromXml(applicationContext,R.string.fifth_group), getStringFromXml(applicationContext,R.string.fifth_track),
-            303000, getStringFromXml(applicationContext,R.string.fifth_album_url),"","","","")
+            303000, getStringFromXml(applicationContext,R.string.fifth_album_url),"","","","",
+            getStringFromXml(applicationContext,R.string.fifth_preview_url))
 
         val trackList: MutableList<Track> = mutableListOf(first,second,third,fourth,fifth)
 
