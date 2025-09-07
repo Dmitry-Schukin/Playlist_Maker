@@ -4,5 +4,5 @@
     android:id="@+id/media_screen_layout"
     style="@style/constraint_layout_style"
     android:layout_height="match_parent"
-    tools:context=".MediaLibraryActivity">
+    tools:context=".presentation.ui.media_library.MediaLibraryActivity">
 </androidx.constraintlayout.widget.ConstraintLayout>

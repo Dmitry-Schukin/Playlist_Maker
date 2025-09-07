@@ -1,23 +1,21 @@
-package com.practicum.playlist_maker.presentation.search
+package com.practicum.playlist_maker.presentation.ui.search
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlist_maker.R
-import com.practicum.playlist_maker.model.Track
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.practicum.playlist_maker.R
+import com.practicum.playlist_maker.domain.Track
 
 class TrackSearchViewHolder (parent: ViewGroup) :
-    RecyclerView.ViewHolder(LayoutInflater.from(parent.context)
+    RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context)
     .inflate(R.layout.track_list_model, parent, false))  {
 
     private val trackImage: ImageView = itemView.findViewById(R.id.album_art)
@@ -43,7 +41,7 @@ class TrackSearchViewHolder (parent: ViewGroup) :
             .into(trackImage)
         vocalistName.text = model.artistName
         songName.text = model.trackName
-        trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis.toLong())
+        trackTime.text = model.trackTimeMillis
     }
 
 }

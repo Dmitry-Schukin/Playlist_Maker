@@ -1,17 +1,18 @@
-package com.practicum.playlist_maker
+package com.practicum.playlist_maker.presentation.ui.settings
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
-import androidx.core.net.toUri
+import com.practicum.playlist_maker.App
+import com.practicum.playlist_maker.R
 
 class SettingsActivity : AppCompatActivity() {
 

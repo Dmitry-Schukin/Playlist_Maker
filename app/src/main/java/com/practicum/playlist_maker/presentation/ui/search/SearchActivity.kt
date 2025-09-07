@@ -1,16 +1,14 @@
-package com.practicum.playlist_maker
+package com.practicum.playlist_maker.presentation.ui.search
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -28,18 +26,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
-import com.practicum.playlist_maker.model.Track
-import com.practicum.playlist_maker.network.track_list.TrackApi
-import com.practicum.playlist_maker.network.track_list.TrackResponse
-import com.practicum.playlist_maker.presentation.search.SearchHistory
-import com.practicum.playlist_maker.presentation.search.TrackSearchAdapter
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.converter.gson.GsonConverterFactory
-
-
+import com.practicum.playlist_maker.R
+import com.practicum.playlist_maker.creator.Creator
+import com.practicum.playlist_maker.data.HistorySharedPrefsManager
+import com.practicum.playlist_maker.domain.RequestResult
+import com.practicum.playlist_maker.domain.Track
+import com.practicum.playlist_maker.domain.api.TrackInteractor
+import com.practicum.playlist_maker.domain.use_case.HistorySharedPrefsUseCase
+import com.practicum.playlist_maker.presentation.ui.audio_player.AudioPlayerActivity
 
 class SearchActivity : AppCompatActivity() {
     companion object {
@@ -51,35 +45,17 @@ class SearchActivity : AppCompatActivity() {
 
 
     private var savedValue: String = TEXT_DEF
-
-    private val trackBaseUrl = "https://itunes.apple.com"
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(trackBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val trackService = retrofit.create(TrackApi::class.java)
     private val tracks = ArrayList<Track>()
-    private var historyTrackList =ArrayList<Track>()
+    private var historyTrackList = ArrayList<Track>()
 
-    private val searchAdapter = TrackSearchAdapter {
-        if(clickOnTrackDebounce()) {
-            val historySharedPref =
-                SearchHistory(getSharedPreferences(SearchHistory.TRACK_HISTORY, MODE_PRIVATE))
-            historySharedPref.addTrackToHistoryList(it)
-            showTrackAudioPlayer(it)
-        }
-    }
-    private val historyAdapter = TrackSearchAdapter{
-        if(clickOnTrackDebounce()) {
-            showTrackAudioPlayer(it)
-        }
-    }
+
     private var isClickOnTrackAllowed = true
     private val mainThreadHandler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { search() }
+    private val getTrackListInteractor = Creator.provideTracksInteractor()
 
-    private lateinit var backClickEvent:MaterialToolbar
+
+    private lateinit var backClickEvent: MaterialToolbar
     private lateinit var inputEditText: EditText
     private lateinit var clearButton: ImageView
     private lateinit var recyclerView: RecyclerView
@@ -91,8 +67,22 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyTitle: TextView
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
-    private lateinit var historySharedPreferences: SharedPreferences
     private lateinit var progressBar: ProgressBar
+    private lateinit var historyUseCase: HistorySharedPrefsUseCase
+
+    //region Adapters initialization
+    private val searchAdapter = TrackSearchAdapter {
+        if (clickOnTrackDebounce()) {
+            historyUseCase.executeAddingNewTrack(it)
+            showTrackAudioPlayer(it)
+        }
+    }
+    private val historyAdapter = TrackSearchAdapter {
+        if (clickOnTrackDebounce()) {
+            showTrackAudioPlayer(it)
+        }
+    }
+    //endregion
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,8 +106,8 @@ class SearchActivity : AppCompatActivity() {
         historyTitle = findViewById<TextView>(R.id.history_title_text_view)
         historyRecyclerView = findViewById<RecyclerView>(R.id.history_recycler_view)
         clearHistoryButton = findViewById<Button>(R.id.clear_history_button)
-        historySharedPreferences = getSharedPreferences(SearchHistory.TRACK_HISTORY, MODE_PRIVATE)
         progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        historyUseCase = HistorySharedPrefsUseCase(HistorySharedPrefsManager(this))
 
         //region Starting settings for displaying screen elements
         clearButton.visibility = if(savedValue.isEmpty()) View.GONE else View.VISIBLE
@@ -132,7 +122,7 @@ class SearchActivity : AppCompatActivity() {
         }
         clearButton.setOnClickListener{
             inputEditText.setText("")
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0) //Hide keyboard
             tracks.clear()
             searchAdapter.notifyDataSetChanged()
@@ -144,8 +134,7 @@ class SearchActivity : AppCompatActivity() {
             placeholderDisable()
         }
         clearHistoryButton.setOnClickListener {
-            val clear = SearchHistory(historySharedPreferences)
-            clear.clearHistory()
+            historyUseCase.executeClear()
             historyTrackList.clear()
             historyAdapter.notifyDataSetChanged()
             historyElementsDisable()
@@ -190,11 +179,13 @@ class SearchActivity : AppCompatActivity() {
 
         //region Creating a list of tracks by using RecyclerView
         recyclerView = findViewById<RecyclerView>(R.id.track_search_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL, false)
+        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         searchAdapter.trackList = tracks
         recyclerView.adapter = searchAdapter
         //endregion
+
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -212,37 +203,34 @@ class SearchActivity : AppCompatActivity() {
     private fun search() {
         if(inputEditText.text.isNotEmpty()) {
 
-            progressBar.isVisible=true
-            recyclerView.isVisible=false
+            progressBar.isVisible = true
+            recyclerView.isVisible = false
             placeholderDisable()
 
-            trackService.getTrack(inputEditText.text.toString())
-                .enqueue(object : Callback<TrackResponse> {
-                    override fun onResponse(
-                        call: Call<TrackResponse>,
-                        response: Response<TrackResponse>
-                    ) {
-                        progressBar.isVisible=false
-                        if (response.isSuccessful) {
-                            val songs = response.body()?.songs
-                            if (songs?.isNotEmpty() == true) {
-                                tracks.clear()
-                                recyclerView.isVisible=true
-                                tracks.addAll(songs)
-                                searchAdapter.notifyDataSetChanged()
-                                showMessage("")
+            getTrackListInteractor.searchTrack(
+                inputEditText.text.toString(),
+                object : TrackInteractor.TracksConsumer {
+
+                    override fun consume(foundTracks: RequestResult) {
+                        mainThreadHandler.post {
+                            progressBar.isVisible=false
+                            if (foundTracks.success == true) {
+                                val songs = foundTracks.trackList
+
+                                if (songs.isNotEmpty() == true) {
+                                    tracks.clear()
+                                    tracks.addAll(songs)
+
+                                    recyclerView.isVisible = true
+                                    searchAdapter.notifyDataSetChanged()
+                                    showMessage("")
+                                } else {
+                                    showMessage(getString(R.string.nothing_was_found))
+                                }
                             } else {
-                                showMessage(getString(R.string.nothing_was_found))
+                                showMessage(getString(R.string.problem_with_network))
                             }
-                        } else {
-                            showMessage(getString(R.string.problem_with_network))
                         }
-
-                    }
-
-                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                        progressBar.isVisible=false
-                        showMessage(getString(R.string.problem_with_network))
                     }
                 })
         }
@@ -268,19 +256,25 @@ class SearchActivity : AppCompatActivity() {
         }
     }
     private fun showTrackHistory() {
-        val history = SearchHistory(historySharedPreferences)
-        val trackListFromSharedPrefs = history.createTracksListFromJson()
+        val trackListFromSharedPrefs = historyUseCase.executeGettingHistoryList()
         if (trackListFromSharedPrefs.isNotEmpty()) {
             historyElementsVisible()
-            historyTrackList = trackListFromSharedPrefs
+            historyTrackList = trackListFromSharedPrefs as ArrayList<Track>
 
             historyRecyclerView = findViewById<RecyclerView>(R.id.history_recycler_view)
-            historyRecyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL, false)
+            historyRecyclerView.layoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             historyAdapter.trackList = historyTrackList
             historyRecyclerView.adapter = historyAdapter
         } else {
             historyElementsDisable()
         }
+    }
+    private fun showTrackAudioPlayer(track: Track){
+        val displayIntent = Intent(this, AudioPlayerActivity::class.java)
+        val jsonTrack = Gson().toJson(track)
+        displayIntent.putExtra(AudioPlayerActivity.Companion.TRACK_INFORMATION_KEY, jsonTrack)
+        startActivity(displayIntent)
     }
     private fun clickOnTrackDebounce() : Boolean {
         val current = isClickOnTrackAllowed
@@ -294,7 +288,7 @@ class SearchActivity : AppCompatActivity() {
         mainThreadHandler.removeCallbacks(searchRunnable)
         mainThreadHandler.postDelayed(searchRunnable, SEARCH_TRACK_DEBOUNCE_DELAY)
     }
-    //region Elements activity methods
+    //region Elements activation methods
     private fun placeholderDisable(){
         placeholderMessage.isVisible=false
         placeholderIconNoConnection.isVisible=false
@@ -312,42 +306,6 @@ class SearchActivity : AppCompatActivity() {
         historyTitle.isVisible=true
         historyRecyclerView.isVisible=true
         clearHistoryButton.isVisible=true
-    }
-    //endregion
-
-    //region Test methods
-    private fun trackListCreatorMockObject(): MutableList<Track> {
-        val first = Track("1",getStringFromXml(applicationContext,R.string.first_group),getStringFromXml(applicationContext,R.string.first_track),
-            301000, getStringFromXml(applicationContext,R.string.first_album_url),getStringFromXml(applicationContext,R.string.first_album),
-            getStringFromXml(applicationContext,R.string.first_release_date),getStringFromXml(applicationContext,R.string.first_genre),
-            getStringFromXml(applicationContext,R.string.country_USA),getStringFromXml(applicationContext,R.string.first_preview_url))
-
-        val second = Track("2",getStringFromXml(applicationContext,R.string.second_group),getStringFromXml(applicationContext,R.string.second_track),
-            275000, getStringFromXml(applicationContext,R.string.second_album_url),"",getStringFromXml(applicationContext,R.string.second_release_date),
-            getStringFromXml(applicationContext,R.string.second_genre),getStringFromXml(applicationContext,R.string.country_USA),
-            getStringFromXml(applicationContext,R.string.second_preview_url))
-
-        val third = Track("3",getStringFromXml(applicationContext,R.string.third_group),getStringFromXml(applicationContext,R.string.third_track),
-            250000, getStringFromXml(applicationContext,R.string.third_album_url),"","",getStringFromXml(applicationContext,R.string.third_genre),
-            getStringFromXml(applicationContext,R.string.country_USA),getStringFromXml(applicationContext,R.string.third_preview_url))
-
-        val fourth= Track("4",getStringFromXml(applicationContext,R.string.fourth_group), getStringFromXml(applicationContext,R.string.fourth_track),
-            333000, getStringFromXml(applicationContext,R.string.fourth_album_url),"","","","",
-            getStringFromXml(applicationContext,R.string.fourth_preview_url))
-
-        val fifth= Track("5",getStringFromXml(applicationContext,R.string.fifth_group), getStringFromXml(applicationContext,R.string.fifth_track),
-            303000, getStringFromXml(applicationContext,R.string.fifth_album_url),"","","","",
-            getStringFromXml(applicationContext,R.string.fifth_preview_url))
-
-        val trackList: MutableList<Track> = mutableListOf(first,second,third,fourth,fifth)
-
-        return trackList
-    }
-    private fun showTrackAudioPlayer(track: Track){
-        val displayIntent = Intent(this, AudioPlayerActivity::class.java)
-        val jsonTrack = Gson().toJson(track)
-        displayIntent.putExtra(AudioPlayerActivity.TRACK_INFORMATION_KEY, jsonTrack)
-        startActivity(displayIntent)
     }
     //endregion
 }
