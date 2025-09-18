@@ -1,16 +1,16 @@
-package com.practicum.playlist_maker.presentation.search
+package com.practicum.playlist_maker.presentation.ui.search
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlist_maker.R
-import com.practicum.playlist_maker.model.Track
+import com.practicum.playlist_maker.domain.Track
+import com.practicum.playlist_maker.presentation.ui.search.TrackSearchViewHolder
 
 class TrackSearchAdapter (val clickListener: TrackClickListener) : RecyclerView.Adapter<TrackSearchViewHolder> (){
 
     var trackList = ArrayList<Track>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackSearchViewHolder = TrackSearchViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackSearchViewHolder =
+        TrackSearchViewHolder(parent)
 
 
     override fun onBindViewHolder(holder: TrackSearchViewHolder, position: Int) {

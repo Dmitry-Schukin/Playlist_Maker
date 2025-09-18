@@ -1,5 +1,4 @@
-package com.practicum.playlist_maker
-
+package com.practicum.playlist_maker.presentation.ui.audio_player
 
 import android.annotation.SuppressLint
 import android.media.MediaPlayer
@@ -18,31 +17,24 @@ import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
-import com.practicum.playlist_maker.model.Track
+import com.practicum.playlist_maker.R
+import com.practicum.playlist_maker.domain.Track
 import kotlinx.coroutines.Runnable
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-
 
 class AudioPlayerActivity : AppCompatActivity() {
     companion object {
         const val TRACK_INFORMATION_KEY = "TRACK_INFORMATION_KEY"
-        private const val MEDIA_PLAYER_STATE_DEFAULT = 0
-        private const val MEDIA_PLAYER_STATE_PREPARED = 1
-        private const val MEDIA_PLAYER_STATE_PLAYING = 2
-        private const val MEDIA_PLAYER_STATE_PAUSED = 3
         private const val UPDATE_DELAY = 500L
     }
-    private var mediaPlayerState = MEDIA_PLAYER_STATE_DEFAULT
+    private var mediaPlayerState = MediaPlayerState.MEDIA_PLAYER_STATE_DEFAULT
     private var mediaPlayer = MediaPlayer()
     private var audioTimeRunnable: Runnable? = null
 
 
     private lateinit var track: Track
-    private lateinit var backClickEvent:MaterialToolbar
+    private lateinit var backClickEvent: MaterialToolbar
     private lateinit var albumImage: ImageView
     private lateinit var trackName: TextView
     private lateinit var vocalistOrGroup: TextView
@@ -102,17 +94,13 @@ class AudioPlayerActivity : AppCompatActivity() {
 
             trackName.text = track.trackName
             vocalistOrGroup.text = track.artistName
-            val trackTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong())
             setCurrentAudioTime(0) //set audioTime value
-            trackDuration.text = trackTime
+            trackDuration.text = track.trackTimeMillis
 
             if(track.releaseDate.isNotEmpty()){
-                val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")
-                val parsedDate: LocalDate = LocalDate.parse(track.releaseDate, formatter)
-                val yearFromFormattedDate = parsedDate.year.toString()
-                trackYearCreation.text = yearFromFormattedDate
+                trackYearCreation.text = track.releaseDate
             }else{
-                yearTitle.isVisible=false
+                yearTitle.isVisible =false
                 trackYearCreation.isVisible=false
             }
             if(track.collectionName.isNotEmpty()) {
@@ -139,12 +127,12 @@ class AudioPlayerActivity : AppCompatActivity() {
         mediaPlayer.setOnPreparedListener {
             playButton.isVisible = true
             pauseButton.isVisible=false
-            mediaPlayerState = MEDIA_PLAYER_STATE_PREPARED
+            mediaPlayerState = MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED
         }
         mediaPlayer.setOnCompletionListener {
             playButton.isVisible = true
             pauseButton.isVisible=false
-            mediaPlayerState = MEDIA_PLAYER_STATE_PREPARED
+            mediaPlayerState = MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED
         }
         //endregion
     }
@@ -166,31 +154,32 @@ class AudioPlayerActivity : AppCompatActivity() {
         mediaPlayer.start()
         pauseButton.isVisible = true
         playButton.isVisible = false
-        mediaPlayerState = MEDIA_PLAYER_STATE_PLAYING
+        mediaPlayerState = MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING
         startReadoutCurrentAudioTimeAsync()
     }
     private fun pausePlayer() {
         mediaPlayer.pause()
         playButton.isVisible = true
         pauseButton.isVisible=false
-        mediaPlayerState = MEDIA_PLAYER_STATE_PAUSED
+        mediaPlayerState = MediaPlayerState.MEDIA_PLAYER_STATE_PAUSED
         if(audioTimeRunnable!=null){ mainThreadHandler.removeCallbacks(audioTimeRunnable!!) }
     }
     private fun playbackControl() {
         when(mediaPlayerState) {
-            MEDIA_PLAYER_STATE_PLAYING -> {
+            MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING -> {
                 pausePlayer()
             }
-            MEDIA_PLAYER_STATE_PREPARED, MEDIA_PLAYER_STATE_PAUSED -> {
+            MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED, MediaPlayerState.MEDIA_PLAYER_STATE_PAUSED -> {
                 startPlayer()
             }
+            else -> {}
         }
     }
     private fun startReadoutCurrentAudioTimeAsync(){
         audioTimeRunnable=getAudioTimeRunnable()
         mainThreadHandler.post(audioTimeRunnable!!)
     }
-    private fun getAudioTimeRunnable(): Runnable{
+    private fun getAudioTimeRunnable(): Runnable {
         return object : Runnable {
             override fun run() {
                     val currentTime = mediaPlayer.currentPosition.toLong()

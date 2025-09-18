@@ -1,4 +1,4 @@
-package com.practicum.playlist_maker
+package com.practicum.playlist_maker.presentation.ui.main_screen
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -9,7 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-
+import com.practicum.playlist_maker.R
+import com.practicum.playlist_maker.presentation.ui.media_library.MediaLibraryActivity
+import com.practicum.playlist_maker.presentation.ui.search.SearchActivity
+import com.practicum.playlist_maker.presentation.ui.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
