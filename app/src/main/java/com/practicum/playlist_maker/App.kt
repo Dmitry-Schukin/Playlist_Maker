@@ -2,20 +2,21 @@ package com.practicum.playlist_maker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlist_maker.creator.Creator
-import com.practicum.playlist_maker.domain.use_case.ThemeSharedPrefsUseCase
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 
 class App: Application() {
-
-    private lateinit var themeUseCase:ThemeSharedPrefsUseCase
 
     var darkTheme = false
 
     override fun onCreate() {
         super.onCreate()
-        themeUseCase = Creator.getThemeSharedPrefsUseCase(this)
-        darkTheme = themeUseCase.executeGettingThemeState(isCurrentThemeDark())
+        val s = getSharedPreferences(SETTINGS,MODE_PRIVATE)
+            .getString(KEY_FOR_THEME,null)
+        darkTheme = if(s!=null) Gson().fromJson(s, object : TypeToken<Boolean>() {}.type)
+                    else isCurrentThemeDark()
+
         switchTheme(darkTheme)
     }
     fun switchTheme(darkThemeEnabled: Boolean) {
@@ -27,11 +28,16 @@ class App: Application() {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
-        themeUseCase.executeSavingThemeState(darkTheme)
     }
 
     fun isCurrentThemeDark(): Boolean{
         if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) return true
         else return false
     }
+    companion object{
+        const val SETTINGS = "light_dark_themes"
+        const val KEY_FOR_THEME="key_for_light_dark_switch"
+        const val KEY_FOR_HISTORY="key_for_track_parameters"
+    }
 }
+
