@@ -24,19 +24,18 @@ class AudioPlayerViewModel (urlPreview: String): ViewModel() {
     private var currentTrackUrl: String = urlPreview
     private val mediaPlayer = MediaPlayer()
     private val handler = Handler(Looper.getMainLooper())
+    private var stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_DEFAULT)
 
-    private val stateLiveData =
-        MutableLiveData<MediaPlayerState>(MediaPlayerState.MEDIA_PLAYER_STATE_DEFAULT)
-    fun observePlayerState(): LiveData<MediaPlayerState> = stateLiveData
+    private val stateAndTimerLiveData=
+        MutableLiveData<StateController>(stateAndTime)
+    fun observeStateAndTime(): LiveData<StateController> = stateAndTimerLiveData
 
-    private val progressTimeLiveData = MutableLiveData<String>("00:00")
-    fun observeProgressTime(): LiveData<String> = progressTimeLiveData
-
-    private var audioTimeRunnable: kotlinx.coroutines.Runnable = Runnable {
-        if (stateLiveData.value == MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING) {
+    private var audioTimeRunnable= Runnable {
+        if(stateAndTimerLiveData.value?.state==MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING){
             startTimerUpdate()
         }
     }
+
 
     init {
         preparePlayer()
@@ -48,7 +47,7 @@ class AudioPlayerViewModel (urlPreview: String): ViewModel() {
         postCurrentAudioTime(0)
     }
     fun onPlayButtonClicked() {
-        when(stateLiveData.value) {
+        when(stateAndTimerLiveData.value?.state) {
             MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING -> {
                 pausePlayer()
             }
@@ -58,38 +57,49 @@ class AudioPlayerViewModel (urlPreview: String): ViewModel() {
             else -> {}
         }
     }
+
     private fun preparePlayer() {
         mediaPlayer.setDataSource(currentTrackUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            stateLiveData.postValue(MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED)
+            stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED)
+            stateAndTimerLiveData.postValue(stateAndTime)
         }
         mediaPlayer.setOnCompletionListener {
-            stateLiveData.postValue(MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED)
+            stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED)
+            stateAndTimerLiveData.postValue(stateAndTime)
             postCurrentAudioTime(0)
         }
     }
+
     fun startPlayer() {
         mediaPlayer.start()
-        stateLiveData.postValue(MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+        stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+        stateAndTimerLiveData.postValue(stateAndTime)
         startTimerUpdate()
     }
+
     private fun startTimerUpdate() {
-        progressTimeLiveData.postValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition))
+        stateAndTime.setTimerValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition))
+        stateAndTimerLiveData.postValue(stateAndTime)
         handler.postDelayed(audioTimeRunnable, UPDATE_DELAY)
     }
 
     private fun postCurrentAudioTime(currentTime: Long){
         val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
         val time = timeFormat.format(currentTime)
-        progressTimeLiveData.postValue(time)
+        stateAndTime.setTimerValue(time)
+        stateAndTimerLiveData.postValue(stateAndTime)
     }
 
     fun pausePlayer() {
         pauseTimer()
         mediaPlayer.pause()
-        stateLiveData.postValue(MediaPlayerState.MEDIA_PLAYER_STATE_PAUSED)
+        stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PAUSED)
+        stateAndTime.setTimerValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition))
+        stateAndTimerLiveData.postValue(stateAndTime)
     }
+
     private fun pauseTimer() {
         handler.removeCallbacks(audioTimeRunnable)
     }

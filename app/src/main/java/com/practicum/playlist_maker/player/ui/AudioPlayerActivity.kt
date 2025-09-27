@@ -55,16 +55,12 @@ class AudioPlayerActivity : AppCompatActivity() {
         )
             .get(AudioPlayerViewModel::class.java)
 
-        viewModel?.observePlayerState()?.observe(this) {
-            changeButtonState(it == MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+        viewModel?.observeStateAndTime()?.observe(this){
+            changeButtonState(it.state==MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+            bindingAudioPlayerActivity.audioTime.text= it.getTimerValue()
         }
 
-        viewModel?.observeProgressTime()?.observe(this) {
-            bindingAudioPlayerActivity.audioTime.text= it
-        }
         //endregion
-
-
 
         mainThreadHandler = Handler(Looper.getMainLooper())
 

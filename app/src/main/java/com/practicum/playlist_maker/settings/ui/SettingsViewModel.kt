@@ -11,29 +11,24 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlist_maker.App
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.creator.Creator
+import com.practicum.playlist_maker.settings.domain.api.SharingInteractor
+import com.practicum.playlist_maker.settings.domain.model.EmailData
+import com.practicum.playlist_maker.settings.domain.api.SettingsThemeModeInteractor
 
-class SettingsViewModel(private val context: Context): ViewModel() {
+class SettingsViewModel(private val sharingInteractor: SharingInteractor,
+                        private val settingsInteractor: SettingsThemeModeInteractor): ViewModel() {
     companion object {
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
+        fun getFactory(sharingInteractor: SharingInteractor,
+                       settingsInteractor: SettingsThemeModeInteractor): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val app =
-                    (this[ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY] as App)
-                SettingsViewModel(app)
+                SettingsViewModel(sharingInteractor,settingsInteractor)
             }
         }
     }
-    private val settingsInteractor = Creator.provideSettingsInteractor(context)
+
     private val stateLiveData = MutableLiveData<Boolean>(getThemeState())
     fun observeSettingsState(): LiveData<Boolean> = stateLiveData
 
-    private val sharedLiveData = SingleLiveEvent<String>()
-    fun observeShared(): LiveData<String> = sharedLiveData
-
-    private val emailLiveData = SingleLiveEvent<String>()
-    fun observeEmail(): LiveData<String> = emailLiveData
-
-    private val agreementLiveData = SingleLiveEvent<String>()
-    fun observeAgreement(): LiveData<String> = agreementLiveData
 
     fun getThemeState():Boolean{
         return settingsInteractor.getTheme()
@@ -44,14 +39,14 @@ class SettingsViewModel(private val context: Context): ViewModel() {
         stateLiveData.postValue(isDarkTheme)
     }
 
-    fun sharedLink(){
-        sharedLiveData.postValue(ContextCompat.getString(context, R.string.url_practicum_course))
+    fun sharedLink(): String{
+        return sharingInteractor.shareApp()
     }
-    fun sendEmail(){
-        emailLiveData.postValue(ContextCompat.getString(context, R.string.my_mail))
+    fun sendEmail(): EmailData{
+        return sharingInteractor.openSupport()
     }
-    fun openAgreement(){
-        agreementLiveData.postValue(ContextCompat.getString(context, R.string.url_practicum_offer))
+    fun openAgreement():String{
+        return sharingInteractor.openTerms()
     }
 
 }

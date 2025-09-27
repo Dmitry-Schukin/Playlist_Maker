@@ -4,26 +4,30 @@ import android.content.Context
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlist_maker.App.Companion.KEY_FOR_HISTORY
 import com.practicum.playlist_maker.App.Companion.KEY_FOR_THEME
+import com.practicum.playlist_maker.settings.data.impl.ExternalNavigatorImpl
 import com.practicum.playlist_maker.search.data.shared.HistoryPrefsStorageClient
 import com.practicum.playlist_maker.search.data.impl.SearchHistoryRepositoryImpl
 import com.practicum.playlist_maker.settings.data.shared.SettingsPrefsStorageClient
 import com.practicum.playlist_maker.settings.data.impl.SettingsRepositoryImpl
 import com.practicum.playlist_maker.search.data.network.TrackNetworkClient
 import com.practicum.playlist_maker.search.data.network.TrackRepositoryImpl
+import com.practicum.playlist_maker.settings.domain.api.ExternalNavigator
 import com.practicum.playlist_maker.search.domain.model.Track
 import com.practicum.playlist_maker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlist_maker.search.domain.api.SearchHistoryRepository
+import com.practicum.playlist_maker.settings.domain.api.SharingInteractor
 import com.practicum.playlist_maker.settings.domain.api.SettingsRepository
 import com.practicum.playlist_maker.settings.domain.api.SettingsThemeModeInteractor
 import com.practicum.playlist_maker.search.domain.api.TrackInteractor
 import com.practicum.playlist_maker.search.domain.api.TrackRepository
 import com.practicum.playlist_maker.search.domain.impl.SearchHistoryInteractorImpl
+import com.practicum.playlist_maker.settings.domain.impl.SharingInteractorImpl
 import com.practicum.playlist_maker.settings.domain.impl.SettingsThemeModeInteractorImpl
 import com.practicum.playlist_maker.search.domain.impl.TrackInteractorImpl
 
 
 object Creator {
-    //region Getting data from server
+
     private fun getTracksRepository(): TrackRepository {
         return TrackRepositoryImpl(TrackNetworkClient())
     }
@@ -33,6 +37,7 @@ object Creator {
     //endregion
 
     //region Getting data from SharedPreferences for track history
+
     private fun getSearchHistoryRepository(context: Context): SearchHistoryRepository {
         return SearchHistoryRepositoryImpl(
             HistoryPrefsStorageClient<ArrayList<Track>>(
@@ -64,5 +69,13 @@ object Creator {
     }
     //endregion
 
+    private fun getExternalNavigator(): ExternalNavigator{
+        return ExternalNavigatorImpl()
+    }
+    fun provideSharingInteractor(): SharingInteractor {
+        return SharingInteractorImpl(getExternalNavigator())
+    }
 
 }
+
+
