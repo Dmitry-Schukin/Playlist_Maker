@@ -1,16 +1,11 @@
 package com.practicum.playlist_maker.settings.ui
 
-import android.content.Context
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlist_maker.App
-import com.practicum.playlist_maker.R
-import com.practicum.playlist_maker.creator.Creator
 import com.practicum.playlist_maker.settings.domain.api.SharingInteractor
 import com.practicum.playlist_maker.settings.domain.model.EmailData
 import com.practicum.playlist_maker.settings.domain.api.SettingsThemeModeInteractor

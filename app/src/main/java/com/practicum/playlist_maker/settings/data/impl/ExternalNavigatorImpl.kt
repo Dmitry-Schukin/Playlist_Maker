@@ -2,22 +2,24 @@ package com.practicum.playlist_maker.settings.data.impl
 
 import com.practicum.playlist_maker.settings.domain.api.ExternalNavigator
 import com.practicum.playlist_maker.settings.domain.model.EmailData
+import com.practicum.playlist_maker.R
+import com.practicum.playlist_maker.creator.Creator
 
 class ExternalNavigatorImpl: ExternalNavigator {
     override fun shareLink(): String {
-        return "https://practicum.yandex.ru/android-developer/?from=catalog"
+        return Creator.context.getString(R.string.url_practicum_course)
     }
 
     override fun openEmail(): EmailData {
         return EmailData(
-            "iliakirsanov5321@gmail.com",
-            "Сообщение разработчикам и разработчицам приложения Playlist Maker",
-            "Спасибо разработчикам и разработчицам за крутое приложение!"
+            Creator.context.getString(R.string.my_mail),
+                Creator.context.getString(R.string.mail_subject),
+                    Creator.context.getString(R.string.mail_text)
         )
     }
 
     override fun openLink(): String {
-        return "https://yandex.ru/legal/practicum_offer"
+        return Creator.context.getString(R.string.url_practicum_offer)
     }
 
 }

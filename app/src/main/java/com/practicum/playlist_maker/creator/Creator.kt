@@ -1,7 +1,7 @@
 package com.practicum.playlist_maker.creator
 
-import android.content.Context
 import com.google.gson.reflect.TypeToken
+import com.practicum.playlist_maker.App
 import com.practicum.playlist_maker.App.Companion.KEY_FOR_HISTORY
 import com.practicum.playlist_maker.App.Companion.KEY_FOR_THEME
 import com.practicum.playlist_maker.settings.data.impl.ExternalNavigatorImpl
@@ -28,6 +28,8 @@ import com.practicum.playlist_maker.search.domain.impl.TrackInteractorImpl
 
 object Creator {
 
+    val context = App.context
+
     private fun getTracksRepository(): TrackRepository {
         return TrackRepositoryImpl(TrackNetworkClient())
     }
@@ -38,7 +40,7 @@ object Creator {
 
     //region Getting data from SharedPreferences for track history
 
-    private fun getSearchHistoryRepository(context: Context): SearchHistoryRepository {
+    private fun getSearchHistoryRepository(): SearchHistoryRepository {
         return SearchHistoryRepositoryImpl(
             HistoryPrefsStorageClient<ArrayList<Track>>(
                 context,
@@ -48,13 +50,13 @@ object Creator {
         )
     }
 
-    fun provideSearchHistoryInteractor(context: Context): SearchHistoryInteractor {
-        return SearchHistoryInteractorImpl(getSearchHistoryRepository(context))
+    fun provideSearchHistoryInteractor(): SearchHistoryInteractor {
+        return SearchHistoryInteractorImpl(getSearchHistoryRepository())
     }
     //endregion
 
     //region Getting data from SharedPreferences for theme selection
-    private fun getSettingsThemeModeRepository(context: Context): SettingsRepository {
+    private fun getSettingsThemeModeRepository(): SettingsRepository {
         return SettingsRepositoryImpl(
             SettingsPrefsStorageClient<Boolean>(
                 context,
@@ -64,8 +66,8 @@ object Creator {
         )
     }
 
-    fun provideSettingsInteractor(context: Context): SettingsThemeModeInteractor {
-        return SettingsThemeModeInteractorImpl(getSettingsThemeModeRepository(context))
+    fun provideSettingsInteractor(): SettingsThemeModeInteractor {
+        return SettingsThemeModeInteractorImpl(getSettingsThemeModeRepository())
     }
     //endregion
 

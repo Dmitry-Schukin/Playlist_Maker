@@ -18,9 +18,12 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
+import com.practicum.playlist_maker.creator.Creator
 import com.practicum.playlist_maker.databinding.ActivitySearchBinding
 import com.practicum.playlist_maker.search.domain.model.Track
 import com.practicum.playlist_maker.player.ui.AudioPlayerActivity
+import com.practicum.playlist_maker.search.domain.api.SearchHistoryInteractor
+import com.practicum.playlist_maker.search.domain.api.TrackInteractor
 
 class SearchActivity : AppCompatActivity() {
     companion object {
@@ -30,6 +33,8 @@ class SearchActivity : AppCompatActivity() {
     private var isClickOnTrackAllowed = true
     private val mainThreadHandler = Handler(Looper.getMainLooper())
     private lateinit var bindingSearchActivity: ActivitySearchBinding
+    private lateinit var trackListInteractor: TrackInteractor
+    private lateinit var trackHistoryInteractor: SearchHistoryInteractor
     private var viewModel: SearchViewModel? = null
     private var textWatcher: TextWatcher? = null
 
@@ -58,11 +63,12 @@ class SearchActivity : AppCompatActivity() {
             view.updatePadding(top = statusBar.top)
             insets
         }
-
+        trackListInteractor = Creator.provideTracksInteractor()
+        trackHistoryInteractor = Creator.provideSearchHistoryInteractor()
         //region Observer
         viewModel = ViewModelProvider(
             this, SearchViewModel.Companion
-                .getFactory()
+                .getFactory(trackListInteractor,trackHistoryInteractor)
         )
             .get(SearchViewModel::class.java)
 

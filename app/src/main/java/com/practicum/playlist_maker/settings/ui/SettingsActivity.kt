@@ -36,7 +36,7 @@ class SettingsActivity : AppCompatActivity() {
 
         //region ViewModel
         sharingInteractor = Creator.provideSharingInteractor()
-        settingsInteractor = Creator.provideSettingsInteractor(applicationContext)
+        settingsInteractor = Creator.provideSettingsInteractor()
         viewModel= ViewModelProvider(
             this,
             SettingsViewModel.Companion.getFactory(sharingInteractor,settingsInteractor)

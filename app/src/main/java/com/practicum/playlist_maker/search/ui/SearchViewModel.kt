@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlist_maker.App
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.creator.Creator
 import com.practicum.playlist_maker.search.domain.model.Resource
@@ -21,21 +20,20 @@ import com.practicum.playlist_maker.search.domain.model.Track
 import com.practicum.playlist_maker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlist_maker.search.domain.api.TrackInteractor
 
-class SearchViewModel (private val context: Context): ViewModel(){
+class SearchViewModel (private val trackListInteractor: TrackInteractor,
+                       private val trackHistoryInteractor: SearchHistoryInteractor): ViewModel(){
     companion object {
         private const val SEARCH_TRACK_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
 
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
+        fun getFactory(trackListInteractor: TrackInteractor,
+                       trackHistoryInteractor: SearchHistoryInteractor): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val app =
-                    (this[ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY] as App)
-                SearchViewModel(app)
+                SearchViewModel(trackListInteractor,trackHistoryInteractor)
             }
         }
     }
-    private val trackListInteractor = Creator.provideTracksInteractor()
-    private val trackHistoryInteractor = Creator.provideSearchHistoryInteractor(context)
+
     private var latestSearchText: String? = null
     private val stateLiveData = MutableLiveData<SearchState>()
     fun observeState(): LiveData<SearchState> = stateLiveData
@@ -83,7 +81,7 @@ class SearchViewModel (private val context: Context): ViewModel(){
                                     errorMessage != null -> {
                                         renderState(
                                             SearchState.Error(
-                                                errorMessage = context.getString(R.string.problem_with_network),
+                                                errorMessage = Creator.context.getString(R.string.problem_with_network),
                                             )
                                         )
 
@@ -92,7 +90,7 @@ class SearchViewModel (private val context: Context): ViewModel(){
                                     tracks.isEmpty() -> {
                                         renderState(
                                             SearchState.Empty(
-                                                message = context.getString(R.string.nothing_was_found),
+                                                message = Creator.context.getString(R.string.nothing_was_found),
                                             )
                                         )
                                     }
@@ -111,7 +109,7 @@ class SearchViewModel (private val context: Context): ViewModel(){
             } else {
                 renderState(
                     SearchState.Error(
-                        errorMessage = context.getString(R.string.problem_with_network),
+                        errorMessage = Creator.context.getString(R.string.problem_with_network),
                     )
                 )
             }
@@ -155,7 +153,7 @@ class SearchViewModel (private val context: Context): ViewModel(){
     }
     @SuppressLint("ServiceCast")
     private fun isConnected(): Boolean {
-        val connectivityManager = context.getSystemService(
+        val connectivityManager = Creator.context.getSystemService(
             Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         if (capabilities != null) {
