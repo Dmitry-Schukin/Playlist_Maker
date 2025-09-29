@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_screen_layout"
     style="@style/main_screen_linear_layout_style">
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/main_screen_title"
