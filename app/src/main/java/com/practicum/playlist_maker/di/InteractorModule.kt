@@ -11,16 +11,16 @@ import com.practicum.playlist_maker.settings.domain.impl.SharingInteractorImpl
 import org.koin.dsl.module
 
 val interactorModule = module{
-    single<TrackInteractor> {
+    factory<TrackInteractor> {
         TrackInteractorImpl(get())
     }
-    single<SearchHistoryInteractor>{
+    factory<SearchHistoryInteractor>{
         SearchHistoryInteractorImpl(get())
     }
-    single<SettingsThemeModeInteractor>{
+    factory<SettingsThemeModeInteractor>{
         SettingsThemeModeInteractorImpl(get())
     }
-    single<SharingInteractor> {
+    factory<SharingInteractor> {
         SharingInteractorImpl(get())
     }
 }
