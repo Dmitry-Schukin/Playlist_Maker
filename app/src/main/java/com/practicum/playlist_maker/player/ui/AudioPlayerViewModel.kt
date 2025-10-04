@@ -6,19 +6,11 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerViewModel (urlPreview: String): ViewModel() {
     companion object {
-        fun getFactory(url: String): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                AudioPlayerViewModel(url)
-            }
-        }
         private const val UPDATE_DELAY = 200L
     }
     private var currentTrackUrl: String = urlPreview

@@ -6,8 +6,8 @@ import com.practicum.playlist_maker.settings.domain.api.SettingsRepository
 
 class SettingsRepositoryImpl (private val storage: StorageClient<Boolean>):
     SettingsRepository {
-    override fun saveValue(value: Boolean) {
-        storage.save(value)
+    override fun saveValue(valueIsDark: Boolean) {
+        storage.save(valueIsDark)
     }
 
     override fun getValue(): Boolean {

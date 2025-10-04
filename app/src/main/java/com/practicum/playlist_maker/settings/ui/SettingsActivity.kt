@@ -9,19 +9,16 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
-import com.practicum.playlist_maker.creator.Creator
 import com.practicum.playlist_maker.databinding.ActivitySettingsBinding
 import com.practicum.playlist_maker.settings.domain.api.SharingInteractor
 import com.practicum.playlist_maker.settings.domain.api.SettingsThemeModeInteractor
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
     private lateinit var bindingSettingsActivity: ActivitySettingsBinding
 
-    private lateinit var  sharingInteractor: SharingInteractor
-    private lateinit var  settingsInteractor: SettingsThemeModeInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,14 +32,6 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         //region ViewModel
-        sharingInteractor = Creator.provideSharingInteractor()
-        settingsInteractor = Creator.provideSettingsInteractor()
-        viewModel= ViewModelProvider(
-            this,
-            SettingsViewModel.Companion.getFactory(sharingInteractor,settingsInteractor)
-        )
-            .get(SettingsViewModel::class.java)
-
         viewModel.observeSettingsState().observe(this){isDarkThemeOrNot->
             updateTheme(isDarkThemeOrNot)
         }

@@ -15,15 +15,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import com.practicum.playlist_maker.creator.Creator
 import com.practicum.playlist_maker.databinding.ActivitySearchBinding
 import com.practicum.playlist_maker.search.domain.model.Track
 import com.practicum.playlist_maker.player.ui.AudioPlayerActivity
-import com.practicum.playlist_maker.search.domain.api.SearchHistoryInteractor
-import com.practicum.playlist_maker.search.domain.api.TrackInteractor
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     companion object {
@@ -33,15 +30,13 @@ class SearchActivity : AppCompatActivity() {
     private var isClickOnTrackAllowed = true
     private val mainThreadHandler = Handler(Looper.getMainLooper())
     private lateinit var bindingSearchActivity: ActivitySearchBinding
-    private lateinit var trackListInteractor: TrackInteractor
-    private lateinit var trackHistoryInteractor: SearchHistoryInteractor
-    private var viewModel: SearchViewModel? = null
+    private val viewModel: SearchViewModel by viewModel()
     private var textWatcher: TextWatcher? = null
 
     //region Adapters initialization
     private val searchAdapter = TrackSearchAdapter {
         if (clickOnTrackDebounce()) {
-            viewModel?.addNewTrackToHistoryList(it)
+            viewModel.addNewTrackToHistoryList(it)
             showTrackAudioPlayer(it)
         }
     }
@@ -63,16 +58,9 @@ class SearchActivity : AppCompatActivity() {
             view.updatePadding(top = statusBar.top)
             insets
         }
-        trackListInteractor = Creator.provideTracksInteractor()
-        trackHistoryInteractor = Creator.provideSearchHistoryInteractor()
-        //region Observer
-        viewModel = ViewModelProvider(
-            this, SearchViewModel.Companion
-                .getFactory(trackListInteractor,trackHistoryInteractor)
-        )
-            .get(SearchViewModel::class.java)
 
-        viewModel?.observeState()?.observe(this) {
+        //region Observer
+        viewModel.observeState().observe(this) {
             render(it)
         }
         //endregion
@@ -81,7 +69,7 @@ class SearchActivity : AppCompatActivity() {
         showClearTextButtonOrNot()
         placeholderDisable()
         bindingSearchActivity.inputEditText.requestFocus()//focus on EditText
-        viewModel?.getHistoryList()
+        viewModel.getHistoryList()
         //endregion
 
         //region Listeners
@@ -97,16 +85,16 @@ class SearchActivity : AppCompatActivity() {
             inputMethodManager?.hideSoftInputFromWindow(bindingSearchActivity.inputEditText.windowToken, 0) //Hide keyboard
             searchAdapter.trackList.clear()
             searchAdapter.notifyDataSetChanged()
-            viewModel?.getHistoryList()
+            viewModel.getHistoryList()
         }
         bindingSearchActivity.updateTrackListButton.setOnClickListener {
-            viewModel?.searchDebounce(
-                changedText = bindingSearchActivity.inputEditText.text.toString() ?: ""
+            viewModel.searchRequest(
+                bindingSearchActivity.inputEditText.text.toString() ?: ""
             )
             placeholderDisable()
         }
         bindingSearchActivity.clearHistoryButton.setOnClickListener {
-            viewModel?.clearHistory()
+            viewModel.clearHistory()
             historyAdapter.notifyDataSetChanged()
             historyElementsDisable()
         }

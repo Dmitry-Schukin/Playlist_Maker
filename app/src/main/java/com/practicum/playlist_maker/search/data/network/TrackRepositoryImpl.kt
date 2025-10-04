@@ -1,6 +1,7 @@
 package com.practicum.playlist_maker.search.data.network
 
 import android.annotation.SuppressLint
+import com.practicum.playlist_maker.common.data.NetworkClient
 import com.practicum.playlist_maker.search.data.dto.ResponseTypeEnum
 import com.practicum.playlist_maker.search.data.dto.TrackSearchResponse
 import com.practicum.playlist_maker.search.domain.api.TrackRepository
@@ -12,7 +13,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class TrackRepositoryImpl (
-    private val trackNetworkClient: TrackNetworkClient
+    private val trackNetworkClient: NetworkClient
 ): TrackRepository {
 
     @SuppressLint("SuspiciousIndentation")
