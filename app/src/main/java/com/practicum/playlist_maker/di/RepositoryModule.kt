@@ -1,5 +1,7 @@
 package com.practicum.playlist_maker.di
 
+import com.practicum.playlist_maker.player.data.impl.PlayerRepositoryImpl
+import com.practicum.playlist_maker.player.domain.api.PlayerRepository
 import com.practicum.playlist_maker.search.data.impl.SearchHistoryRepositoryImpl
 import com.practicum.playlist_maker.search.data.network.TrackRepositoryImpl
 import com.practicum.playlist_maker.search.domain.api.SearchHistoryRepository
@@ -19,5 +21,7 @@ val repositoryModule = module{
     factory<SettingsRepository>{
         SettingsRepositoryImpl(get(named("settings")))
     }
-
+    factory<PlayerRepository> {
+        PlayerRepositoryImpl()
+    }
 }

@@ -1,6 +1,7 @@
 package com.practicum.playlist_maker.player.ui
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,7 +12,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
-import com.google.gson.Gson
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.ActivityAudioPlayerBinding
 import com.practicum.playlist_maker.search.domain.model.Track
@@ -32,6 +32,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var mainThreadHandler: Handler
 
 
+
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +51,16 @@ class AudioPlayerActivity : AppCompatActivity() {
         //endregion
 
         //region Getting track using Intent
-        val trackTransferIntent = intent
-        val receivedJsonTrack = trackTransferIntent.getStringExtra(TRACK_INFORMATION_KEY)
-        track = Gson().fromJson(receivedJsonTrack, Track::class.java)
+        track = if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK_INFORMATION_KEY, Track::class.java)
+        }else{
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra<Track>(TRACK_INFORMATION_KEY)
+        }?: return finish()
+
         url = track.previewUrl
 
-        viewModel?.observeStateAndTime()?.observe(this){
+        viewModel.observeStateAndTime().observe(this){
             changeButtonState(it.state==MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
             bindingAudioPlayerActivity.audioTime.text= it.getTimerValue()
         }
@@ -102,12 +107,12 @@ class AudioPlayerActivity : AppCompatActivity() {
             finish()
         }
         bindingAudioPlayerActivity.playButton.setOnClickListener {
-            viewModel?.startPlayer()
-            viewModel?.onPlayButtonClicked()
+            viewModel.startPlayer()
+            viewModel.onPlayButtonClicked()
         }
         bindingAudioPlayerActivity.pauseButton.setOnClickListener {
-            viewModel?.pausePlayer()
-            viewModel?.onPlayButtonClicked() }
+            viewModel.pausePlayer()
+            viewModel.onPlayButtonClicked() }
 
 
         //endregion
@@ -124,7 +129,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel?.onPause()
+        viewModel.onPause()
     }
 
 }

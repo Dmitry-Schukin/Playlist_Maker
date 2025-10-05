@@ -1,20 +1,21 @@
 package com.practicum.playlist_maker.player.ui
 
-import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.practicum.playlist_maker.player.domain.api.PlayerInteractor
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class AudioPlayerViewModel (urlPreview: String): ViewModel() {
+class AudioPlayerViewModel (urlPreview: String,
+                            private val player: PlayerInteractor): ViewModel() {
     companion object {
         private const val UPDATE_DELAY = 200L
     }
     private var currentTrackUrl: String = urlPreview
-    private val mediaPlayer = MediaPlayer()
+    private val mediaPlayer = player.getPlayer()
     private val handler = Handler(Looper.getMainLooper())
     private var stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_DEFAULT)
 

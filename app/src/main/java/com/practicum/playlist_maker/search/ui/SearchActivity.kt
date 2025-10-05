@@ -16,7 +16,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.gson.Gson
 import com.practicum.playlist_maker.databinding.ActivitySearchBinding
 import com.practicum.playlist_maker.search.domain.model.Track
 import com.practicum.playlist_maker.player.ui.AudioPlayerActivity
@@ -128,8 +127,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showTrackAudioPlayer(track: Track){
         val displayIntent = Intent(this, AudioPlayerActivity::class.java)
-        val jsonTrack = Gson().toJson(track)
-        displayIntent.putExtra(AudioPlayerActivity.Companion.TRACK_INFORMATION_KEY, jsonTrack)
+        displayIntent.putExtra(AudioPlayerActivity.Companion.TRACK_INFORMATION_KEY, track)
         startActivity(displayIntent)
     }
     private fun clickOnTrackDebounce() : Boolean {

@@ -3,6 +3,7 @@ import org.gradle.kotlin.dsl.annotationProcessor
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
 }
 
 android {
