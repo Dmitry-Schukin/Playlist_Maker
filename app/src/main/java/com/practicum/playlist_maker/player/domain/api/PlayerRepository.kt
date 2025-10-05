@@ -1,7 +1,10 @@
 package com.practicum.playlist_maker.player.domain.api
 
-import android.media.MediaPlayer
-
 interface PlayerRepository {
-    fun getMediaPlayer(): MediaPlayer
+    fun preparePlayer(trackUrl:String, onPrepared:()-> Unit, onCompletion:()->Unit)
+    fun startPlayer()
+    fun pausePlayer()
+    fun getCurrentAudioTime(): Int
+    fun releasePlayer()
+
 }

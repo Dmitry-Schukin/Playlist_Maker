@@ -6,38 +6,47 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.practicum.playlist_maker.player.domain.api.PlayerInteractor
+import com.practicum.playlist_maker.player.domain.model.MediaPlayerState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerViewModel (urlPreview: String,
-                            private val player: PlayerInteractor): ViewModel() {
+                            private val playerInteractor: PlayerInteractor): ViewModel() {
     companion object {
         private const val UPDATE_DELAY = 200L
     }
     private var currentTrackUrl: String = urlPreview
-    private val mediaPlayer = player.getPlayer()
     private val handler = Handler(Looper.getMainLooper())
-    private var stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_DEFAULT)
+    private var stateAndTime = StateController(playerInteractor.getCurrentState())
 
     private val stateAndTimerLiveData=
         MutableLiveData<StateController>(stateAndTime)
     fun observeStateAndTime(): LiveData<StateController> = stateAndTimerLiveData
 
     private var audioTimeRunnable= Runnable {
-        if(stateAndTimerLiveData.value?.state==MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING){
+        if(stateAndTimerLiveData.value?.state== MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING){
             startTimerUpdate()
         }
     }
 
-
     init {
-        preparePlayer()
+        playerInteractor.preparePlayer(currentTrackUrl,
+            {
+                stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED)
+                stateAndTimerLiveData.postValue(stateAndTime)
+            },
+            {
+                stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED)
+                postCurrentAudioTime(0)
+            })
+
     }
 
     override fun onCleared() {
         super.onCleared()
-        mediaPlayer.release()
         postCurrentAudioTime(0)
+        playerInteractor.releasePlayer()
+
     }
     fun onPlayButtonClicked() {
         when(stateAndTimerLiveData.value?.state) {
@@ -51,32 +60,19 @@ class AudioPlayerViewModel (urlPreview: String,
         }
     }
 
-    private fun preparePlayer() {
-        mediaPlayer.setDataSource(currentTrackUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED)
-            stateAndTimerLiveData.postValue(stateAndTime)
-        }
-        mediaPlayer.setOnCompletionListener {
-            stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PREPARED)
-            stateAndTimerLiveData.postValue(stateAndTime)
-            postCurrentAudioTime(0)
-        }
-    }
-
     fun startPlayer() {
-        mediaPlayer.start()
-        stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+        playerInteractor.startPlayer()
+        stateAndTime = StateController(playerInteractor.getCurrentState())
         stateAndTimerLiveData.postValue(stateAndTime)
         startTimerUpdate()
     }
 
     private fun startTimerUpdate() {
-        stateAndTime.setTimerValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition))
+        stateAndTime.setTimerValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(playerInteractor.getCurrentAudioTime()))
         stateAndTimerLiveData.postValue(stateAndTime)
         handler.postDelayed(audioTimeRunnable, UPDATE_DELAY)
     }
+
 
     private fun postCurrentAudioTime(currentTime: Long){
         val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
@@ -87,9 +83,9 @@ class AudioPlayerViewModel (urlPreview: String,
 
     fun pausePlayer() {
         pauseTimer()
-        mediaPlayer.pause()
-        stateAndTime = StateController(MediaPlayerState.MEDIA_PLAYER_STATE_PAUSED)
-        stateAndTime.setTimerValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition))
+        playerInteractor.pausePlayer()
+        stateAndTime = StateController(playerInteractor.getCurrentState())
+        stateAndTime.setTimerValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(playerInteractor.getCurrentAudioTime()))
         stateAndTimerLiveData.postValue(stateAndTime)
     }
 

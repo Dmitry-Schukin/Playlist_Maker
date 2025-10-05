@@ -1,5 +1,6 @@
 package com.practicum.playlist_maker.di
 
+import android.media.MediaPlayer
 import com.practicum.playlist_maker.player.data.impl.PlayerRepositoryImpl
 import com.practicum.playlist_maker.player.domain.api.PlayerRepository
 import com.practicum.playlist_maker.search.data.impl.SearchHistoryRepositoryImpl
@@ -21,7 +22,10 @@ val repositoryModule = module{
     factory<SettingsRepository>{
         SettingsRepositoryImpl(get(named("settings")))
     }
+
+    factory{ MediaPlayer() }
+
     factory<PlayerRepository> {
-        PlayerRepositoryImpl()
+        PlayerRepositoryImpl(get())
     }
 }

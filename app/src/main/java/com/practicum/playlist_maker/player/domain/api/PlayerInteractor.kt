@@ -1,7 +1,12 @@
 package com.practicum.playlist_maker.player.domain.api
 
-import android.media.MediaPlayer
+import com.practicum.playlist_maker.player.domain.model.MediaPlayerState
 
 interface PlayerInteractor {
-    fun getPlayer(): MediaPlayer
+    fun preparePlayer(trackUrl:String, onPrepared:()-> Unit, onCompletion:()->Unit)
+    fun startPlayer()
+    fun pausePlayer()
+    fun getCurrentAudioTime(): Int
+    fun releasePlayer()
+    fun getCurrentState(): MediaPlayerState
 }

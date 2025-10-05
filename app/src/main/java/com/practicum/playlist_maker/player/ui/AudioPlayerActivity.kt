@@ -14,6 +14,7 @@ import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.ActivityAudioPlayerBinding
+import com.practicum.playlist_maker.player.domain.model.MediaPlayerState
 import com.practicum.playlist_maker.search.domain.model.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -61,7 +62,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         url = track.previewUrl
 
         viewModel.observeStateAndTime().observe(this){
-            changeButtonState(it.state==MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+            changeButtonState(it.state== MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
             bindingAudioPlayerActivity.audioTime.text= it.getTimerValue()
         }
 
@@ -131,5 +132,4 @@ class AudioPlayerActivity : AppCompatActivity() {
         super.onPause()
         viewModel.onPause()
     }
-
 }
