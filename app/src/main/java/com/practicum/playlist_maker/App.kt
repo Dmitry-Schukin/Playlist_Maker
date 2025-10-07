@@ -1,17 +1,26 @@
 package com.practicum.playlist_maker
 
 import android.app.Application
-import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlist_maker.creator.Creator
+import com.practicum.playlist_maker.di.dataModule
+import com.practicum.playlist_maker.di.interactorModule
+import com.practicum.playlist_maker.di.navigatorModule
+import com.practicum.playlist_maker.di.repositoryModule
+import com.practicum.playlist_maker.di.viewModelModule
+import com.practicum.playlist_maker.settings.domain.api.SettingsThemeModeInteractor
+import org.koin.android.ext.android.getKoin
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
 
 class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        context = applicationContext
-
-        val settingsInteractor = Creator.provideSettingsInteractor()
+        startKoin {
+            androidContext(this@App)
+            modules(dataModule, navigatorModule, repositoryModule, interactorModule, viewModelModule)
+        }
+        val settingsInteractor = getKoin().get<SettingsThemeModeInteractor>()
         val darkTheme = settingsInteractor.getTheme()
         AppCompatDelegate.setDefaultNightMode(
             if (darkTheme) {
@@ -23,10 +32,6 @@ class App: Application() {
         settingsInteractor.saveThemeModeValue(darkTheme)
     }
 
-    companion object{
-        lateinit var context: Context
-        const val KEY_FOR_THEME="key_for_light_dark_switch"
-        const val KEY_FOR_HISTORY="key_for_track_parameters"
-    }
+
 }
 

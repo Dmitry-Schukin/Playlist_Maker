@@ -4,10 +4,10 @@ import com.practicum.playlist_maker.common.data.NetworkClient
 import com.practicum.playlist_maker.search.data.dto.Response
 import com.practicum.playlist_maker.search.data.dto.ResponseTypeEnum
 
-class TrackNetworkClient : NetworkClient {
+class TrackNetworkClient (private val trackService:ItunesApiService): NetworkClient {
     override fun doRequest(expression: String): Response {
         try {
-            val response = RetrofitClient.trackService.getTrack(expression).execute()
+            val response = trackService.getTrack(expression).execute()
             val body = response.body() ?: Response()
             return body.apply { resultCode = ResponseTypeEnum.Companion.setResponseType(response.code()) }
         }catch (ex: Exception){

@@ -1,6 +1,7 @@
 package com.practicum.playlist_maker.player.ui
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,22 +11,27 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.google.gson.Gson
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.ActivityAudioPlayerBinding
+import com.practicum.playlist_maker.player.domain.model.MediaPlayerState
 import com.practicum.playlist_maker.search.domain.model.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class AudioPlayerActivity : AppCompatActivity() {
     companion object {
         const val TRACK_INFORMATION_KEY = "TRACK_INFORMATION_KEY"
     }
 
-    private  var viewModel: AudioPlayerViewModel? = null
+    private val viewModel:AudioPlayerViewModel by viewModel {
+        parametersOf(url)
+    }
     private lateinit var bindingAudioPlayerActivity: ActivityAudioPlayerBinding
     private lateinit var track: Track
+    private lateinit var url: String
     private lateinit var mainThreadHandler: Handler
+
 
 
     @SuppressLint("ResourceType")
@@ -46,17 +52,17 @@ class AudioPlayerActivity : AppCompatActivity() {
         //endregion
 
         //region Getting track using Intent
-        val trackTransferIntent = intent
-        val receivedJsonTrack = trackTransferIntent.getStringExtra(TRACK_INFORMATION_KEY)
-        track = Gson().fromJson(receivedJsonTrack, Track::class.java)
-        viewModel = ViewModelProvider(
-            this,
-            AudioPlayerViewModel.Companion.getFactory(track.previewUrl)
-        )
-            .get(AudioPlayerViewModel::class.java)
+        track = if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK_INFORMATION_KEY, Track::class.java)
+        }else{
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra<Track>(TRACK_INFORMATION_KEY)
+        }?: return finish()
 
-        viewModel?.observeStateAndTime()?.observe(this){
-            changeButtonState(it.state==MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+        url = track.previewUrl
+
+        viewModel.observeStateAndTime().observe(this){
+            changeButtonState(it.state== MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
             bindingAudioPlayerActivity.audioTime.text= it.getTimerValue()
         }
 
@@ -102,12 +108,12 @@ class AudioPlayerActivity : AppCompatActivity() {
             finish()
         }
         bindingAudioPlayerActivity.playButton.setOnClickListener {
-            viewModel?.startPlayer()
-            viewModel?.onPlayButtonClicked()
+            viewModel.startPlayer()
+            viewModel.onPlayButtonClicked()
         }
         bindingAudioPlayerActivity.pauseButton.setOnClickListener {
-            viewModel?.pausePlayer()
-            viewModel?.onPlayButtonClicked() }
+            viewModel.pausePlayer()
+            viewModel.onPlayButtonClicked() }
 
 
         //endregion
@@ -124,7 +130,6 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel?.onPause()
+        viewModel.onPause()
     }
-
 }

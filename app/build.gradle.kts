@@ -3,6 +3,7 @@ import org.gradle.kotlin.dsl.annotationProcessor
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -47,16 +48,16 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation("com.google.android.material:material:1.6.1")
-    implementation("com.github.bumptech.glide:glide:4.14.2")
-    implementation("com.google.code.gson:gson:2.10")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation("androidx.activity:activity-ktx:1.6.1")
+    implementation(libs.glide)
+    implementation(libs.gson)
+    implementation(libs.converter.gson)
+    implementation(libs.retrofit)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.activity.ktx)
+    implementation (libs.koin)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
+    annotationProcessor(libs.glide.compiler)
 }
