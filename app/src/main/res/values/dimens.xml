@@ -19,6 +19,7 @@
     <dimen name="margin_150">150dp</dimen>
     <dimen name="margin_4">4dp</dimen>
     <dimen name="image_button_size">48dp</dimen>
+    <dimen name="object_size_48">48dp</dimen>
     <dimen name="top_layout_height">56dp</dimen>
     <dimen name="margin_start_end">12dp</dimen>
     <dimen name="left_right_padding">14dp</dimen>
@@ -34,4 +35,7 @@
     <dimen name="model_height">61dp</dimen>
     <dimen name="margin_70">70dp</dimen>
     <dimen name="margin_10">10dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+    <dimen name="margin_106">106dp</dimen>
+    <dimen name="margin_24">24dp</dimen>
 </resources>

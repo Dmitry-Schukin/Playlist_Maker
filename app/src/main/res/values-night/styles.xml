@@ -64,6 +64,12 @@
         <item name="titleTextColor">@color/white</item>
         <item name="navigationIconTint">@color/white</item>
     </style>
+    <style name="media_material_toolbar_style" parent="material_toolbar_general_size_style">
+        <item name="title">@string/media_library</item>
+        <item name="navigationIcon">@drawable/arrow_back</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="navigationIconTint">@color/white</item>
+    </style>
 
     <!-- Атрибуты кнопкок Главного экрана -->
     <style name="main_screen_button_style" parent="Widget.MaterialComponents.Button.UnelevatedButton">
@@ -408,5 +414,32 @@
         <item name="android:src">@drawable/like_button_night</item>
         <item name="android:layout_marginTop">@dimen/margin_70</item>
         <item name="android:background">@android:color/transparent</item>
+    </style>
+    <!-- Атрибуты на странице "Медиатека"-->
+    <style name="tab_layout_media_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/object_size_48</item>
+        <item name="android:background">@color/dark_color</item>
+        <item name="tabTextColor">@color/white</item>
+        <item name="tabIndicatorColor">@color/white</item>
+        <item name="android:contentDescription">@string/media_library</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabIndicatorFullWidth">true</item>
+        <item name="tabRippleColor">@color/dark_color</item>
+        <item name="android:layout_marginLeft">@dimen/margin_24</item>
+        <item name="android:layout_marginRight">@dimen/margin_24</item>
+    </style>
+    <style name="new_playlist_button" parent="settings_supporting_button">
+        <item name="android:text">@string/new_playlist</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:layout_marginTop">24dp</item>
+    </style>
+    <style name="tab_page_text_appearance">
+        <item name="android:textColor">@color/dark_color</item>
+        <item name="android:textSize">@dimen/text_size_14</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textAlignment">center</item>
     </style>
 </resources>
