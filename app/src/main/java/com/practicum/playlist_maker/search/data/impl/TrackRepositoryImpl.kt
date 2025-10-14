@@ -1,4 +1,4 @@
-package com.practicum.playlist_maker.search.data.network
+package com.practicum.playlist_maker.search.data.impl
 
 import android.annotation.SuppressLint
 import com.practicum.playlist_maker.common.data.NetworkClient
