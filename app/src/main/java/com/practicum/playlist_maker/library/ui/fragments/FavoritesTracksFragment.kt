@@ -32,6 +32,11 @@ class FavoritesTracksFragment: Fragment() {
         //endregion
         viewModel.showFavoritesTracks()
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     private fun placeholderDisable(){
         binding.apply{
             placeholderIconNotFoundFavorites.isVisible = false

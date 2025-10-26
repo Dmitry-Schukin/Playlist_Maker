@@ -31,6 +31,10 @@ class PlaylistFragment: Fragment(){
         //endregion
         viewModel.showPlaylists()
     }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     fun render(state: FragmentState) {
         when (state) {
             is FragmentState.Content -> showContent(state.list)
