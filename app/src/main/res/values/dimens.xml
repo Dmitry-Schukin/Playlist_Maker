@@ -7,6 +7,7 @@
     <dimen name="text_size_14">14sp</dimen>
     <dimen name="text_size_13">13sp</dimen>
     <dimen name="text_size_11">11sp</dimen>
+    <dimen name="text_size_12">12sp</dimen>
     <dimen name="left_right_margin">16dp</dimen>
     <dimen name="settings_top_bottom_padding">21dp</dimen>
     <dimen name="top_bottom_margin">24dp</dimen>

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/general_view_linear_layout_style">
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/general_view_linear_layout_style"
+    tools:context="com.practicum.playlist_maker.settings.ui.SettingsFragment">
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/settings_material_toolbar"
         style="@style/settings_material_toolbar_style"

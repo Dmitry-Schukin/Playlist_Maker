@@ -1,34 +1,32 @@
 package com.practicum.playlist_maker.search.ui
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlist_maker.databinding.ActivitySearchBinding
+import com.practicum.playlist_maker.R
+import com.practicum.playlist_maker.databinding.FragmentSearchBinding
+import com.practicum.playlist_maker.player.ui.AudioPlayerFragment
 import com.practicum.playlist_maker.search.domain.model.Track
-import com.practicum.playlist_maker.player.ui.AudioPlayerActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
-    companion object {
-        private const val CLICK_ON_TRACK_DEBOUNCE_DELAY = 1000L
-    }
+class SearchFragment: Fragment() {
+
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     private var isClickOnTrackAllowed = true
     private val mainThreadHandler = Handler(Looper.getMainLooper())
-    private lateinit var bindingSearchActivity: ActivitySearchBinding
     private val viewModel: SearchViewModel by viewModel()
     private var textWatcher: TextWatcher? = null
 
@@ -46,20 +44,17 @@ class SearchActivity : AppCompatActivity() {
     }
     //endregion
 
-    @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        bindingSearchActivity = ActivitySearchBinding.inflate(layoutInflater)
-        enableEdgeToEdge()
-        setContentView(bindingSearchActivity.root)
-        ViewCompat.setOnApplyWindowInsetsListener(bindingSearchActivity.root) { view, insets ->
-            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            view.updatePadding(top = statusBar.top)
-            insets
-        }
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         //region Observer
-        viewModel.observeState().observe(this) {
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
         //endregion
@@ -67,32 +62,30 @@ class SearchActivity : AppCompatActivity() {
         //region Starting settings for displaying screen elements
         showClearTextButtonOrNot()
         placeholderDisable()
-        bindingSearchActivity.inputEditText.requestFocus()//focus on EditText
+        binding.inputEditText.requestFocus()//focus on EditText
         viewModel.getHistoryList()
         //endregion
 
         //region Listeners
-        bindingSearchActivity.searchMaterialToolbar.setNavigationOnClickListener {
-            finish()
-        }
-        bindingSearchActivity.clearIcon.setOnClickListener{
-            bindingSearchActivity.apply {
+
+        binding.clearIcon.setOnClickListener{
+            binding.apply {
                 inputEditText.setText("")
                 trackSearchRecyclerView.isVisible =false
             }
-            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(bindingSearchActivity.inputEditText.windowToken, 0) //Hide keyboard
+            val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(binding.inputEditText.windowToken, 0) //Hide keyboard
             searchAdapter.trackList.clear()
             searchAdapter.notifyDataSetChanged()
             viewModel.getHistoryList()
         }
-        bindingSearchActivity.updateTrackListButton.setOnClickListener {
+        binding.updateTrackListButton.setOnClickListener {
             viewModel.searchRequest(
-                bindingSearchActivity.inputEditText.text.toString() ?: ""
+                binding.inputEditText.text.toString() ?: ""
             )
             placeholderDisable()
         }
-        bindingSearchActivity.clearHistoryButton.setOnClickListener {
+        binding.clearHistoryButton.setOnClickListener {
             viewModel.clearHistory()
             historyAdapter.notifyDataSetChanged()
             historyElementsDisable()
@@ -103,45 +96,51 @@ class SearchActivity : AppCompatActivity() {
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel?.searchDebounce(
+                viewModel.searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
                 showClearTextButtonOrNot()
             }
             override fun afterTextChanged(s: Editable?) {}
         }
-        bindingSearchActivity.inputEditText.addTextChangedListener(textWatcher)
+        binding.inputEditText.addTextChangedListener(textWatcher)
         //endregion
-
 
         //region Creating a list of tracks by using RecyclerView
-        bindingSearchActivity.trackSearchRecyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        bindingSearchActivity.trackSearchRecyclerView.adapter = searchAdapter
-        bindingSearchActivity.historyRecyclerView.layoutManager=
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        bindingSearchActivity.historyRecyclerView.adapter = historyAdapter
+        binding.trackSearchRecyclerView.layoutManager =
+            LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+        binding.trackSearchRecyclerView.adapter = searchAdapter
+        binding.historyRecyclerView.layoutManager=
+            LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+        binding.historyRecyclerView.adapter = historyAdapter
         //endregion
+
     }
-
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     private fun showTrackAudioPlayer(track: Track){
-        val displayIntent = Intent(this, AudioPlayerActivity::class.java)
-        displayIntent.putExtra(AudioPlayerActivity.Companion.TRACK_INFORMATION_KEY, track)
-        startActivity(displayIntent)
+        val bundle = Bundle().apply { putParcelable(AudioPlayerFragment.Companion.TRACK_INFORMATION_KEY,track) }
+        findNavController().navigate(
+            R.id.action_searchFragment_to_audioPlayerFragment,
+            bundle)
+
     }
     private fun clickOnTrackDebounce() : Boolean {
         val current = isClickOnTrackAllowed
         if (isClickOnTrackAllowed) {
             isClickOnTrackAllowed = false
-            mainThreadHandler.postDelayed({ isClickOnTrackAllowed = true }, CLICK_ON_TRACK_DEBOUNCE_DELAY)
+            mainThreadHandler.postDelayed({ isClickOnTrackAllowed = true },
+                CLICK_ON_TRACK_DEBOUNCE_DELAY
+            )
         }
         return current
     }
 
     //region Elements activation methods
     private fun placeholderDisable(){
-        bindingSearchActivity.apply {
+        binding.apply {
             placeholderMessage.isVisible = false
             placeholderIconSmthWrong.isVisible = false
             placeholderIconNothing.isVisible = false
@@ -149,7 +148,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
     private fun historyElementsDisable(){
-        bindingSearchActivity.apply {
+        binding.apply {
             historyLayout.isVisible = false
             historyTitleTextView.isVisible = false
             historyRecyclerView.isVisible = false
@@ -157,7 +156,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
     private fun historyElementsVisible(){
-        bindingSearchActivity.apply {
+        binding.apply {
             historyLayout.isVisible = true
             historyTitleTextView.isVisible = true
             historyRecyclerView.isVisible = true
@@ -175,17 +174,17 @@ class SearchActivity : AppCompatActivity() {
         }
     }
     fun showLoading() {
-        bindingSearchActivity.progressBar.isVisible = true
-        bindingSearchActivity.trackSearchRecyclerView.isVisible = false
+        binding.progressBar.isVisible = true
+        binding.trackSearchRecyclerView.isVisible = false
         placeholderDisable()
         historyElementsDisable()
     }
 
     fun showContent(trackList: List<Track>) {
-        bindingSearchActivity.trackSearchRecyclerView.isVisible = true
+        binding.trackSearchRecyclerView.isVisible = true
         placeholderDisable()
         historyElementsDisable()
-        bindingSearchActivity.progressBar.isVisible = false
+        binding.progressBar.isVisible = false
 
         searchAdapter.trackList.clear()
         searchAdapter.trackList.addAll(trackList)
@@ -196,7 +195,7 @@ class SearchActivity : AppCompatActivity() {
         searchAdapter.trackList.clear()
         searchAdapter.notifyDataSetChanged()
         historyElementsDisable()
-        bindingSearchActivity.apply {
+        binding.apply {
             trackSearchRecyclerView.isVisible = false
             progressBar.isVisible = false
             placeholderMessage.isVisible = true
@@ -210,7 +209,7 @@ class SearchActivity : AppCompatActivity() {
         searchAdapter.trackList.clear()
         searchAdapter.notifyDataSetChanged()
         historyElementsDisable()
-        bindingSearchActivity.apply {
+        binding.apply {
             trackSearchRecyclerView.isVisible = false
             progressBar.isVisible = false
             placeholderMessage.isVisible = true
@@ -220,12 +219,12 @@ class SearchActivity : AppCompatActivity() {
     }
 
     fun showHistory(historyTrackList: List<Track>){
-        if(bindingSearchActivity.inputEditText.hasFocus()
-                    && historyTrackList.isNotEmpty()&& bindingSearchActivity.inputEditText.text.isEmpty()
+        if(binding.inputEditText.hasFocus()
+            && historyTrackList.isNotEmpty()&& binding.inputEditText.text.isEmpty()
         ){
             placeholderDisable()
             historyElementsVisible()
-            bindingSearchActivity.apply {
+            binding.apply {
                 trackSearchRecyclerView.isVisible = false
                 progressBar.isVisible = false
             }
@@ -239,9 +238,10 @@ class SearchActivity : AppCompatActivity() {
         }
     }
     private fun showClearTextButtonOrNot(){
-        bindingSearchActivity.clearIcon.isVisible = !bindingSearchActivity.inputEditText.text.isNullOrEmpty()
+        binding.clearIcon.isVisible = !binding.inputEditText.text.isNullOrEmpty()
     }
-    fun getStringFromXml(context: Context, resId: Int): String {
-        return context.resources.getString(resId)
+
+    companion object {
+        private const val CLICK_ON_TRACK_DEBOUNCE_DELAY = 1000L
     }
 }

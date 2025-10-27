@@ -89,8 +89,11 @@ class AudioPlayerViewModel (urlPreview: String,
         stateAndTimerLiveData.postValue(stateAndTime)
     }
 
-    private fun pauseTimer() {
+     fun pauseTimer() {
         handler.removeCallbacks(audioTimeRunnable)
+    }
+    fun release(){
+        playerInteractor.releasePlayer()
     }
     fun onPause(){
         pausePlayer()

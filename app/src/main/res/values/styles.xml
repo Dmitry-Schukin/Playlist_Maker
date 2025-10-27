@@ -45,9 +45,7 @@
     </style>
     <style name="settings_material_toolbar_style" parent="material_toolbar_general_size_style">
         <item name="title">@string/settings</item>
-        <item name="navigationIcon">@drawable/arrow_back</item>
         <item name="titleTextColor">@color/dark_color</item>
-        <item name="navigationIconTint">@color/dark_color</item>
     </style>
     <style name="main_screen_material_toolbar_style" parent="material_toolbar_general_size_style">
         <item name="title">@string/main_screen_title</item>
@@ -55,9 +53,7 @@
     </style>
     <style name="search_material_toolbar_style" parent="material_toolbar_general_size_style">
         <item name="title">@string/search</item>
-        <item name="navigationIcon">@drawable/arrow_back</item>
         <item name="titleTextColor">@color/dark_color</item>
-        <item name="navigationIconTint">@color/dark_color</item>
     </style>
     <style name="audio_player_toolbar_style" parent="material_toolbar_general_size_style">
         <item name="navigationIcon">@drawable/arrow_back</item>
@@ -66,9 +62,7 @@
     </style>
     <style name="media_material_toolbar_style" parent="material_toolbar_general_size_style">
         <item name="title">@string/media_library</item>
-        <item name="navigationIcon">@drawable/arrow_back</item>
         <item name="titleTextColor">@color/dark_color</item>
-        <item name="navigationIconTint">@color/dark_color</item>
     </style>
 
 
@@ -441,5 +435,21 @@
         <item name="android:letterSpacing">0</item>
         <item name="android:textFontWeight">500</item>
         <item name="android:textAlignment">center</item>
+    </style>
+    <!-- Атрибуты BottomNavigationView-->
+    <style name="bottom_navigation_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/white</item>
+        <item name="itemIconSize">24dp</item>
+        <item name="itemTextAppearanceActive">@style/text_bottom_navigation</item>
+        <item name="itemTextAppearanceInactive">@style/text_bottom_navigation</item>
+        <item name="itemIconTint">@color/bottom_navigation_item_color</item>
+        <item name="itemTextColor">@color/bottom_navigation_item_color</item>
+        <item name="itemRippleColor">@color/white</item>
+    </style>
+    <style name="text_bottom_navigation">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">@dimen/text_size_12</item>
     </style>
 </resources>
