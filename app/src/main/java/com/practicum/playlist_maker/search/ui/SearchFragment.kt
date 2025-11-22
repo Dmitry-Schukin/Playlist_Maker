@@ -2,8 +2,6 @@ package com.practicum.playlist_maker.search.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -12,36 +10,35 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.FragmentSearchBinding
 import com.practicum.playlist_maker.player.ui.AudioPlayerFragment
 import com.practicum.playlist_maker.search.domain.model.Track
+import com.practicum.playlist_maker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment: Fragment() {
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
-
-    private var isClickOnTrackAllowed = true
-    private val mainThreadHandler = Handler(Looper.getMainLooper())
     private val viewModel: SearchViewModel by viewModel()
     private var textWatcher: TextWatcher? = null
 
     //region Adapters initialization
     private val searchAdapter = TrackSearchAdapter {
-        if (clickOnTrackDebounce()) {
-            viewModel.addNewTrackToHistoryList(it)
-            showTrackAudioPlayer(it)
-        }
+        onTrackClickDebounce(it)
     }
     private val historyAdapter = TrackSearchAdapter {
-        if (clickOnTrackDebounce()) {
-            showTrackAudioPlayer(it)
-        }
+        onTrackFromHistoryClickDebounce(it)
     }
+    //endregion
+
+    //region Debounce
+    private lateinit var onTrackClickDebounce: (Track) -> Unit
+    private lateinit var onTrackFromHistoryClickDebounce: (Track) -> Unit
     //endregion
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -63,7 +60,9 @@ class SearchFragment: Fragment() {
         showClearTextButtonOrNot()
         placeholderDisable()
         binding.inputEditText.requestFocus()//focus on EditText
-        viewModel.getHistoryList()
+        if(savedInstanceState==null){
+            viewModel.searchRequest(binding.inputEditText.text.toString())
+        }
         //endregion
 
         //region Listeners
@@ -115,6 +114,16 @@ class SearchFragment: Fragment() {
         binding.historyRecyclerView.adapter = historyAdapter
         //endregion
 
+        //region Debounce Initialization
+        onTrackClickDebounce = debounce<Track>(CLICK_ON_TRACK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
+            viewModel.addNewTrackToHistoryList(track)
+            showTrackAudioPlayer(track)
+        }
+        onTrackFromHistoryClickDebounce = debounce<Track>(CLICK_ON_TRACK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
+            showTrackAudioPlayer(track)
+        }
+        //endregion
+
     }
     override fun onDestroyView() {
         super.onDestroyView()
@@ -126,16 +135,6 @@ class SearchFragment: Fragment() {
             R.id.action_searchFragment_to_audioPlayerFragment,
             bundle)
 
-    }
-    private fun clickOnTrackDebounce() : Boolean {
-        val current = isClickOnTrackAllowed
-        if (isClickOnTrackAllowed) {
-            isClickOnTrackAllowed = false
-            mainThreadHandler.postDelayed({ isClickOnTrackAllowed = true },
-                CLICK_ON_TRACK_DEBOUNCE_DELAY
-            )
-        }
-        return current
     }
 
     //region Elements activation methods
@@ -219,9 +218,7 @@ class SearchFragment: Fragment() {
     }
 
     fun showHistory(historyTrackList: List<Track>){
-        if(binding.inputEditText.hasFocus()
-            && historyTrackList.isNotEmpty()&& binding.inputEditText.text.isEmpty()
-        ){
+        if( historyTrackList.isNotEmpty()&& binding.inputEditText.text.isNullOrEmpty()){
             placeholderDisable()
             historyElementsVisible()
             binding.apply {

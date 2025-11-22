@@ -27,4 +27,10 @@ class PlayerRepositoryImpl(private val mediaPlayer: MediaPlayer): PlayerReposito
     override fun releasePlayer() {
         mediaPlayer.release()
     }
+    override fun isPlaying(): Boolean {
+        return mediaPlayer.isPlaying
+    }
+    override fun stop() {
+        mediaPlayer.stop()
+    }
 }

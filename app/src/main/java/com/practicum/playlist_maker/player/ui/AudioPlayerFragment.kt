@@ -55,9 +55,9 @@ class AudioPlayerFragment: Fragment() {
 
         url = track.previewUrl
 
-        viewModel.observeStateAndTime().observe(viewLifecycleOwner){
-            changeButtonState(it.state== MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
-            binding.audioTime.text= it.getTimerValue()
+        viewModel.observeStateAndTime().observe(viewLifecycleOwner){t->
+            changeButtonState(t.state== MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+            binding.audioTime.text= t.timer
         }
 
         //endregion
@@ -99,20 +99,15 @@ class AudioPlayerFragment: Fragment() {
             findNavController().navigateUp()
         }
         binding.playButton.setOnClickListener {
-            viewModel.startPlayer()
             viewModel.onPlayButtonClicked()
         }
         binding.pauseButton.setOnClickListener {
-            viewModel.pausePlayer()
             viewModel.onPlayButtonClicked() }
-
-
         //endregion
 
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.pauseTimer()
         viewModel.release()
         _binding = null
     }

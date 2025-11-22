@@ -9,4 +9,6 @@ interface PlayerInteractor {
     fun getCurrentAudioTime(): Int
     fun releasePlayer()
     fun getCurrentState(): MediaPlayerState
+    fun isPlaying():Boolean
+    fun stop()
 }

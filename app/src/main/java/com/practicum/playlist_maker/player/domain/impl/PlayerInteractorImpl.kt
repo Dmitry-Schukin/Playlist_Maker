@@ -41,4 +41,12 @@ class PlayerInteractorImpl(private val repository: PlayerRepository): PlayerInte
     override fun getCurrentState(): MediaPlayerState {
         return currentState
     }
+
+    override fun isPlaying(): Boolean {
+        return repository.isPlaying()
+    }
+
+    override fun stop() {
+        repository.stop()
+    }
 }
