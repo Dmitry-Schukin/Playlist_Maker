@@ -6,70 +6,59 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.search.domain.model.Resource
 import com.practicum.playlist_maker.search.domain.model.Track
 import com.practicum.playlist_maker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlist_maker.search.domain.api.TrackInteractor
+import com.practicum.playlist_maker.utils.debounce
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 
 class SearchViewModel (private val context: Context,
                        private val trackListInteractor: TrackInteractor,
                        private val trackHistoryInteractor: SearchHistoryInteractor): ViewModel(){
-    companion object {
-        private const val SEARCH_TRACK_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-
-    }
-
     private var latestSearchText: String? = null
     private val stateLiveData = MutableLiveData<SearchState>()
     fun observeState(): LiveData<SearchState> = stateLiveData
-
     private val handler = Handler(Looper.getMainLooper())
 
-    fun searchDebounce(changedText: String) {
-        if (latestSearchText==null)
-        {
-            getHistoryList()
-        }
-        if (latestSearchText == changedText) {
-            return
-        }
-
-        this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_TRACK_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+    //region Debounce
+    private val trackSearchDebounce = debounce<String>(SEARCH_TRACK_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
+        searchRequest(changedText)
     }
+    fun searchDebounce(changedText: String) {
+        if (latestSearchText != changedText) {
+            latestSearchText = changedText
+            trackSearchDebounce(changedText)
+        }
+    }
+    //endregion
 
     fun searchRequest(newSearchText: String) {
-        if (newSearchText.isNotEmpty()) {
+        if (!newSearchText.isNullOrEmpty()) {
             renderState(
                 SearchState.Loading
             )
             if (isConnected()) {
-                trackListInteractor.searchTrack(
-                    newSearchText,
-                    object : TrackInteractor.TracksConsumer {
-                        override fun consume(foundTracks: List<Track>?, errorMessage: String?) {
-                            handler.post {
+                viewModelScope.launch {
+                    trackListInteractor
+                        .searchTrack(newSearchText)
+                        .catch { exception -> Log.d("FlowError", "$exception")}
+                        .collect { pair ->
+
                                 val tracks = mutableListOf<Track>()
-                                if (foundTracks != null) {
-                                    tracks.addAll(foundTracks)
+
+                                if (pair.first != null) {
+                                    tracks.addAll(pair.first!!)
                                 }
                                 when {
-                                    errorMessage != null -> {
+                                    pair.second != null -> {
                                         renderState(
                                             SearchState.Error(
                                                 errorMessage = context.getString(R.string.problem_with_network),
@@ -96,7 +85,7 @@ class SearchViewModel (private val context: Context,
                                 }
                             }
                         }
-                    })
+
             } else {
                 renderState(
                     SearchState.Error(
@@ -140,7 +129,7 @@ class SearchViewModel (private val context: Context,
 
     override fun onCleared() {
         super.onCleared()
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+
     }
     @SuppressLint("ServiceCast")
     private fun isConnected(): Boolean {
@@ -155,5 +144,8 @@ class SearchViewModel (private val context: Context,
             }
         }
         return false
+    }
+    companion object {
+        private const val SEARCH_TRACK_DEBOUNCE_DELAY = 2000L
     }
 }

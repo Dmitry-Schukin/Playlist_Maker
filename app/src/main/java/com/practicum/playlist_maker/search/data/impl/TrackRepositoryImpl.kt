@@ -7,6 +7,8 @@ import com.practicum.playlist_maker.search.data.dto.TrackSearchResponse
 import com.practicum.playlist_maker.search.domain.api.TrackRepository
 import com.practicum.playlist_maker.search.domain.model.Resource
 import com.practicum.playlist_maker.search.domain.model.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -17,7 +19,7 @@ class TrackRepositoryImpl (
 ): TrackRepository {
 
     @SuppressLint("SuspiciousIndentation")
-    override fun searchTrack(expression: String): Resource<List<Track>> {
+    override fun searchTrack(expression: String): Flow<Resource<List<Track>>> = flow {
 
         val trackResponse = trackNetworkClient.doRequest(expression)
 
@@ -37,9 +39,9 @@ class TrackRepositoryImpl (
                             previewUrl = it.previewUrl
                         )
                     })
-                return requestResult
+                emit(requestResult)
             } else {
-                return Resource.Error("The response to your request came with an ${trackResponse.resultCode} code")
+                emit(Resource.Error("The response to your request came with an ${trackResponse.resultCode} code"))
             }
     }
 

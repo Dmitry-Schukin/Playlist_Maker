@@ -6,5 +6,6 @@ interface PlayerRepository {
     fun pausePlayer()
     fun getCurrentAudioTime(): Int
     fun releasePlayer()
-
+    fun isPlaying(): Boolean
+    fun stop()
 }
