@@ -1,10 +1,12 @@
 package com.practicum.playlist_maker.di
 
 import android.content.Context
+import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlist_maker.common.data.NetworkClient
 import com.practicum.playlist_maker.common.data.StorageClient
+import com.practicum.playlist_maker.common.data.db.AppDatabase
 import com.practicum.playlist_maker.search.data.network.ItunesApiService
 import com.practicum.playlist_maker.search.data.network.TrackNetworkClient
 import com.practicum.playlist_maker.search.data.shared.HistoryPrefsStorageClient
@@ -58,5 +60,9 @@ val dataModule = module{
     }
     single<NetworkClient>{
         TrackNetworkClient(get())
+    }
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .build()
     }
 }

@@ -2,6 +2,7 @@ package com.practicum.playlist_maker.search.data.impl
 
 import android.annotation.SuppressLint
 import com.practicum.playlist_maker.common.data.NetworkClient
+import com.practicum.playlist_maker.common.data.db.AppDatabase
 import com.practicum.playlist_maker.search.data.dto.ResponseTypeEnum
 import com.practicum.playlist_maker.search.data.dto.TrackSearchResponse
 import com.practicum.playlist_maker.search.domain.api.TrackRepository
@@ -15,7 +16,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class TrackRepositoryImpl (
-    private val trackNetworkClient: NetworkClient
+    private val trackNetworkClient: NetworkClient,
+    private val appDatabase: AppDatabase
 ): TrackRepository {
 
     @SuppressLint("SuspiciousIndentation")
@@ -24,6 +26,7 @@ class TrackRepositoryImpl (
         val trackResponse = trackNetworkClient.doRequest(expression)
 
             if (trackResponse.resultCode == ResponseTypeEnum.SUCCESS) {
+                val favoritesId = getAllTrackId()
                 val requestResult = Resource.Success(
                     (trackResponse as TrackSearchResponse).songs.map {
                         Track(
@@ -36,7 +39,8 @@ class TrackRepositoryImpl (
                             releaseDate = convertDateToPatternFormat(it.releaseDate),
                             primaryGenreName = it.primaryGenreName,
                             country = it.country,
-                            previewUrl = it.previewUrl
+                            previewUrl = it.previewUrl,
+                            isFavorite = favoritesId.equals(it.trackId)
                         )
                     })
                 emit(requestResult)
@@ -58,5 +62,8 @@ class TrackRepositoryImpl (
         } else {
             return ""
         }
+    }
+    private suspend fun getAllTrackId():List<String>{
+        return appDatabase.trackDao().getAllTrackId()
     }
 }

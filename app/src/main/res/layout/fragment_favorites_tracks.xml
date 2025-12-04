@@ -20,4 +20,10 @@
         app:layout_constraintTop_toBottomOf="@id/placeholder_icon_not_found_favorites"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/favorites_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/track_list"
+        android:layout_marginTop="@dimen/margin_20"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

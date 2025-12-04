@@ -38,7 +38,6 @@ class PlaylistFragment: Fragment(){
     fun render(state: FragmentState) {
         when (state) {
             is FragmentState.Content -> showContent(state.list)
-            is FragmentState.Error -> showError(state.errorMessage)
             is FragmentState.Empty -> showEmpty(state.message)
         }
     }

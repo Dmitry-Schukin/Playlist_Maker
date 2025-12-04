@@ -4,15 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlist_maker.R
-import com.practicum.playlist_maker.search.domain.model.Resource
 import com.practicum.playlist_maker.search.domain.model.Track
 import com.practicum.playlist_maker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlist_maker.search.domain.api.TrackInteractor
@@ -26,7 +23,7 @@ class SearchViewModel (private val context: Context,
     private var latestSearchText: String? = null
     private val stateLiveData = MutableLiveData<SearchState>()
     fun observeState(): LiveData<SearchState> = stateLiveData
-    private val handler = Handler(Looper.getMainLooper())
+
 
     //region Debounce
     private val trackSearchDebounce = debounce<String>(SEARCH_TRACK_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
@@ -49,7 +46,7 @@ class SearchViewModel (private val context: Context,
                 viewModelScope.launch {
                     trackListInteractor
                         .searchTrack(newSearchText)
-                        .catch { exception -> Log.d("FlowError", "$exception")}
+                        .catch { exception -> Log.d("FlowSearchingError", "$exception")}
                         .collect { pair ->
 
                                 val tracks = mutableListOf<Track>()
@@ -98,14 +95,16 @@ class SearchViewModel (private val context: Context,
         }
     }
 
-    fun getHistoryList(){
-        trackHistoryInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer{
-            override fun consume(searchHistory: Resource<List<Track>>) {
-                handler.post {
+    fun getHistoryList() {
+        viewModelScope.launch {
+            trackHistoryInteractor
+                .getHistory()
+                .catch { exception -> Log.d("FlowHistoryError", "$exception") }
+                .collect { pair ->
                     val tracksHistory = mutableListOf<Track>()
-                    if(searchHistory.data!=null){
+                    if (pair.first != null) {
                         tracksHistory.clear()
-                        tracksHistory.addAll(searchHistory.data)
+                        tracksHistory.addAll(pair.first!!)
                     }
                     renderState(
                         SearchState.History(
@@ -113,9 +112,9 @@ class SearchViewModel (private val context: Context,
                         )
                     )
                 }
-            }
-        })
+        }
     }
+
     fun addNewTrackToHistoryList(newTrack: Track){
         trackHistoryInteractor.saveToHistory(newTrack)
     }

@@ -86,6 +86,7 @@ class SearchFragment: Fragment() {
         }
         binding.clearHistoryButton.setOnClickListener {
             viewModel.clearHistory()
+            historyAdapter.trackList.clear()
             historyAdapter.notifyDataSetChanged()
             historyElementsDisable()
         }
