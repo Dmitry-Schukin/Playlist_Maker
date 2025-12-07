@@ -34,8 +34,6 @@ class AudioPlayerFragment: Fragment() {
     private lateinit var url: String
     private lateinit var mainThreadHandler: Handler
 
-
-
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -61,13 +59,12 @@ class AudioPlayerFragment: Fragment() {
 
         url = track.previewUrl
 
-        viewModel.observeStateAndTime().observe(viewLifecycleOwner){t->
+        viewModel.observeState().observe(viewLifecycleOwner){ t->
             changeButtonState(t.state== MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+            changeFavoriteStateButton(t.isFavorite)
             binding.audioTime.text= t.timer
         }
-        viewModel.observeFavoriteState().observe(viewLifecycleOwner){isFavorite->
-            changeFavoriteStateButton(isFavorite)
-        }
+
 
         //endregion
 
@@ -115,9 +112,11 @@ class AudioPlayerFragment: Fragment() {
         }
         binding.addToFavorites.setOnClickListener {
             viewModel.onFavoriteButtonClicked()
+            buttonEnabledDelay(binding.addToFavoritesActive)
         }
         binding.addToFavoritesActive.setOnClickListener {
             viewModel.onFavoriteButtonClicked()
+            buttonEnabledDelay(binding.addToFavorites)
         }
         //endregion
 
@@ -146,11 +145,9 @@ class AudioPlayerFragment: Fragment() {
         if(isFavorites){
             binding.addToFavorites.isVisible = false
             binding.addToFavoritesActive.isVisible = true
-            buttonEnabledDelay(binding.addToFavoritesActive)
         }else{
             binding.addToFavorites.isVisible = true
             binding.addToFavoritesActive.isVisible = false
-            buttonEnabledDelay(binding.addToFavorites)
         }
     }
     private fun buttonEnabledDelay(button: ImageButton) {

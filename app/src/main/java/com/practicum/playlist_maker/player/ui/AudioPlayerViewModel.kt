@@ -21,17 +21,14 @@ class AudioPlayerViewModel (track: Track,
         private const val UPDATE_DELAY = 300L
     }
     private var url = track.previewUrl
-    private var currentTrack:Track= track
+    private var currentTrack:Track = track
+    private var currentFavoriteStatus: Boolean = track.isFavorite
     private var timerJob: Job? = null
 
     //region LiveData and Observers
-    private val stateAndTimerLiveData=
-        MutableLiveData<StateController>(StateController.Default())
-    fun observeStateAndTime(): LiveData<StateController> = stateAndTimerLiveData
-
-    private val favoriteState=
-        MutableLiveData<Boolean>(track.isFavorite)
-    fun observeFavoriteState(): LiveData<Boolean> = favoriteState
+    private val stateLiveData=
+        MutableLiveData<StateController>(StateController.Default(currentFavoriteStatus))
+    fun observeState(): LiveData<StateController> = stateLiveData
     //endregion
 
     init {
@@ -45,7 +42,7 @@ class AudioPlayerViewModel (track: Track,
     }
     //region Player State Functions
     fun onPlayButtonClicked() {
-        when(stateAndTimerLiveData.value) {
+        when(stateLiveData.value) {
             is StateController.Playing -> {
                 pausePlayer()
             }
@@ -58,17 +55,17 @@ class AudioPlayerViewModel (track: Track,
     fun preparePlayer(){
         playerInteractor.preparePlayer(url,
             {
-                stateAndTimerLiveData.postValue(StateController.Prepared())
+                stateLiveData.postValue(StateController.Prepared(currentFavoriteStatus))
             },
             {
                 timerJob?.cancel()
-                stateAndTimerLiveData.postValue(StateController.Prepared())
+                stateLiveData.postValue(StateController.Prepared(currentFavoriteStatus))
             })
     }
 
     fun startPlayer() {
         playerInteractor.startPlayer()
-        stateAndTimerLiveData.postValue(StateController.Playing(getCurrentPlayerPosition()))
+        stateLiveData.postValue(StateController.Playing(getCurrentPlayerPosition(),currentFavoriteStatus))
         startTimerUpdate()
     }
 
@@ -77,14 +74,14 @@ class AudioPlayerViewModel (track: Track,
         timerJob = viewModelScope.launch {
             while (playerInteractor.isPlaying()) {
                 delay(UPDATE_DELAY)
-                stateAndTimerLiveData.postValue(StateController.Playing(getCurrentPlayerPosition()))
+                stateLiveData.postValue(StateController.Playing(getCurrentPlayerPosition(),currentFavoriteStatus))
             }
         }
     }
     fun pausePlayer() {
         playerInteractor.pausePlayer()
         timerJob?.cancel()
-        stateAndTimerLiveData.postValue(StateController.Paused(getCurrentPlayerPosition()))
+        stateLiveData.postValue(StateController.Paused(getCurrentPlayerPosition(),currentFavoriteStatus))
     }
     private fun getCurrentPlayerPosition(): String {
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(playerInteractor.getCurrentAudioTime())
@@ -92,7 +89,7 @@ class AudioPlayerViewModel (track: Track,
     fun release(){
         playerInteractor.stop()
         playerInteractor.releasePlayer()
-        stateAndTimerLiveData.value = StateController.Default()
+        stateLiveData.value = StateController.Default(currentFavoriteStatus)
     }
     fun onPause(){
         pausePlayer()
@@ -101,14 +98,21 @@ class AudioPlayerViewModel (track: Track,
 
     //region Favorite Button Functions
     fun onFavoriteButtonClicked() {
-        when(favoriteState.value) {
+        when(currentFavoriteStatus) {
             true -> {
                 deleteTrackFromFavorites()
-                favoriteState.postValue(false)
+                currentFavoriteStatus = false
+                val currentState = stateLiveData.value
+                currentState?.isFavorite = false
+                stateLiveData.postValue(currentState!!)
             }
             else -> {
                 makeTrackFavorite()
-                favoriteState.postValue(true)
+                currentFavoriteStatus = true
+                val currentState = stateLiveData.value
+                currentState?.isFavorite = true
+                stateLiveData.postValue(currentState!!)
+
             }
         }
     }
@@ -126,11 +130,20 @@ class AudioPlayerViewModel (track: Track,
         viewModelScope.launch {
             dbInteractor.getAllFavoriteTracks().collect {
                 tracks ->
+                val currentState = stateLiveData.value
                 if(!tracks.first.isNullOrEmpty()) {
-                    val state = tracks.first?.any { it.trackId == currentTrack.trackId }
-                    currentTrack.isFavorite = state!!
-                    favoriteState.postValue(state!!)
-                }else{favoriteState.postValue(false)}
+                    val isFavorite = tracks.first?.any { it.trackId == currentTrack.trackId }
+
+                    currentTrack.isFavorite = isFavorite!!
+                    currentFavoriteStatus = isFavorite
+
+                    currentState?.isFavorite = isFavorite
+                    stateLiveData.postValue(currentState!!)
+                }else{
+                    currentFavoriteStatus = false
+                    currentState?.isFavorite = false
+                    stateLiveData.postValue(currentState!!)
+                }
             }
         }
     }

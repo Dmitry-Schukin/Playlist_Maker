@@ -22,6 +22,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment: Fragment() {
 
+    private var latestSearchText: String = ""
+
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by viewModel()
@@ -39,6 +41,7 @@ class SearchFragment: Fragment() {
     //region Debounce
     private lateinit var onTrackClickDebounce: (Track) -> Unit
     private lateinit var onTrackFromHistoryClickDebounce: (Track) -> Unit
+    private lateinit var trackSearchDebounce: (String) -> Unit
     //endregion
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -60,9 +63,7 @@ class SearchFragment: Fragment() {
         showClearTextButtonOrNot()
         placeholderDisable()
         binding.inputEditText.requestFocus()//focus on EditText
-        if(savedInstanceState==null){
-            viewModel.searchRequest(binding.inputEditText.text.toString())
-        }
+        viewModel.searchRequest(latestSearchText)
         //endregion
 
         //region Listeners
@@ -76,7 +77,7 @@ class SearchFragment: Fragment() {
             inputMethodManager?.hideSoftInputFromWindow(binding.inputEditText.windowToken, 0) //Hide keyboard
             searchAdapter.trackList.clear()
             searchAdapter.notifyDataSetChanged()
-            viewModel.getHistoryList()
+            viewModel.searchRequest(binding.inputEditText.text.toString())
         }
         binding.updateTrackListButton.setOnClickListener {
             viewModel.searchRequest(
@@ -96,7 +97,7 @@ class SearchFragment: Fragment() {
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.searchDebounce(
+                searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
                 showClearTextButtonOrNot()
@@ -108,10 +109,10 @@ class SearchFragment: Fragment() {
 
         //region Creating a list of tracks by using RecyclerView
         binding.trackSearchRecyclerView.layoutManager =
-            LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.trackSearchRecyclerView.adapter = searchAdapter
         binding.historyRecyclerView.layoutManager=
-            LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.historyRecyclerView.adapter = historyAdapter
         //endregion
 
@@ -122,6 +123,10 @@ class SearchFragment: Fragment() {
         }
         onTrackFromHistoryClickDebounce = debounce<Track>(CLICK_ON_TRACK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
             showTrackAudioPlayer(track)
+        }
+
+        trackSearchDebounce = debounce<String>(SEARCH_TRACK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, true) { changedText ->
+            viewModel.searchRequest(changedText)
         }
         //endregion
 
@@ -137,7 +142,6 @@ class SearchFragment: Fragment() {
             bundle)
 
     }
-
     //region Elements activation methods
     private fun placeholderDisable(){
         binding.apply {
@@ -164,6 +168,8 @@ class SearchFragment: Fragment() {
         }
     }
     //endregion
+
+    //region Showing data methods
     fun render(state: SearchState) {
         when (state) {
             is SearchState.Loading -> showLoading()
@@ -219,7 +225,7 @@ class SearchFragment: Fragment() {
     }
 
     fun showHistory(historyTrackList: List<Track>){
-        if( historyTrackList.isNotEmpty()&& binding.inputEditText.text.isNullOrEmpty()){
+        if( historyTrackList.isNotEmpty()&& latestSearchText.isNullOrEmpty()){
             placeholderDisable()
             historyElementsVisible()
             binding.apply {
@@ -235,11 +241,19 @@ class SearchFragment: Fragment() {
             historyElementsDisable()
         }
     }
+    //endregion
+    fun searchDebounce(changedText: String) {
+        if (latestSearchText != changedText) {
+            latestSearchText = changedText
+            trackSearchDebounce(changedText)
+        }
+    }
     private fun showClearTextButtonOrNot(){
         binding.clearIcon.isVisible = !binding.inputEditText.text.isNullOrEmpty()
     }
 
     companion object {
         private const val CLICK_ON_TRACK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_TRACK_DEBOUNCE_DELAY = 2000L
     }
 }
