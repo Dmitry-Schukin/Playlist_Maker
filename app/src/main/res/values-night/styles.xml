@@ -409,6 +409,11 @@
         <item name="android:layout_marginTop">@dimen/margin_70</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
+    <style name="add_to_favorite_button_active" parent="button_onto_audio_payer">
+        <item name="android:src">@drawable/like_active_button_night</item>
+        <item name="android:layout_marginTop">@dimen/margin_70</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
     <!-- Атрибуты на странице "Медиатека"-->
     <style name="tab_layout_media_style">
         <item name="android:layout_width">match_parent</item>

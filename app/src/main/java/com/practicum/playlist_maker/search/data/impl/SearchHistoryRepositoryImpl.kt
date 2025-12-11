@@ -2,12 +2,16 @@ package com.practicum.playlist_maker.search.data.impl
 
 import android.util.Log
 import com.practicum.playlist_maker.common.data.StorageClient
+import com.practicum.playlist_maker.common.data.db.AppDatabase
 import com.practicum.playlist_maker.search.domain.api.SearchHistoryRepository
 import com.practicum.playlist_maker.search.domain.model.Resource
 import com.practicum.playlist_maker.search.domain.model.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class SearchHistoryRepositoryImpl (
-    private val storage: StorageClient<ArrayList<Track>>
+    private val storage: StorageClient<ArrayList<Track>>,
+    private val appDatabase: AppDatabase
 ): SearchHistoryRepository {
 
         override fun saveToHistory(track: Track) {
@@ -37,20 +41,29 @@ class SearchHistoryRepositoryImpl (
             storage.save(trackList)
     }
 
-    override fun getHistory(): Resource<List<Track>> {
+    override fun getHistory(): Flow<Resource<List<Track>>> = flow {
         val tracks = storage.getSavedObject()
         if(tracks!=null){
-            return Resource.Success(tracks)
+            updateListWithCurrentFavoriteTracks(tracks)
+            emit(Resource.Success(tracks))
         }else{
             Log.e("SharedPreferenceRequest", "В Track History SharedPreference история треков отсутствует")
             storage.save(arrayListOf())
-            return Resource.Error("История треков пуста")
+            emit(Resource.Error("История треков пуста"))
         }
     }
 
     override fun clearHistory() {
         storage.clear()
     }
-
-
+    private suspend fun updateListWithCurrentFavoriteTracks(tracks:List<Track>) {
+        val favoritesIds = appDatabase.trackDao().getAllTrackId()
+        if (!favoritesIds.isNullOrEmpty()) {
+            for (track in tracks) {
+                if (favoritesIds.contains(track.trackId)) {
+                    track.isFavorite = true
+                }
+            }
+        }
+    }
 }

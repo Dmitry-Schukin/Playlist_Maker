@@ -7,14 +7,18 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.FragmentAudioPlayerBinding
 import com.practicum.playlist_maker.player.domain.model.MediaPlayerState
 import com.practicum.playlist_maker.search.domain.model.Track
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -22,7 +26,7 @@ class AudioPlayerFragment: Fragment() {
 
 
     private val viewModel:AudioPlayerViewModel by viewModel {
-        parametersOf(url)
+        parametersOf(track)
     }
     private var _binding: FragmentAudioPlayerBinding? = null
     private val binding get() = _binding!!
@@ -55,10 +59,12 @@ class AudioPlayerFragment: Fragment() {
 
         url = track.previewUrl
 
-        viewModel.observeStateAndTime().observe(viewLifecycleOwner){t->
+        viewModel.observeState().observe(viewLifecycleOwner){ t->
             changeButtonState(t.state== MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
+            changeFavoriteStateButton(t.isFavorite)
             binding.audioTime.text= t.timer
         }
+
 
         //endregion
 
@@ -102,7 +108,16 @@ class AudioPlayerFragment: Fragment() {
             viewModel.onPlayButtonClicked()
         }
         binding.pauseButton.setOnClickListener {
-            viewModel.onPlayButtonClicked() }
+            viewModel.onPlayButtonClicked()
+        }
+        binding.addToFavorites.setOnClickListener {
+            viewModel.onFavoriteButtonClicked()
+            buttonEnabledDelay(binding.addToFavoritesActive)
+        }
+        binding.addToFavoritesActive.setOnClickListener {
+            viewModel.onFavoriteButtonClicked()
+            buttonEnabledDelay(binding.addToFavorites)
+        }
         //endregion
 
     }
@@ -125,7 +140,25 @@ class AudioPlayerFragment: Fragment() {
             binding.pauseButton.isVisible=false
         }
     }
+
+    private fun changeFavoriteStateButton(isFavorites: Boolean){
+        if(isFavorites){
+            binding.addToFavorites.isVisible = false
+            binding.addToFavoritesActive.isVisible = true
+        }else{
+            binding.addToFavorites.isVisible = true
+            binding.addToFavoritesActive.isVisible = false
+        }
+    }
+    private fun buttonEnabledDelay(button: ImageButton) {
+        lifecycleScope.launch {
+            button.isEnabled = false
+            delay(CLICK_ON_FAVORITE_DELAY)
+            button.isEnabled = true
+        }
+    }
     companion object {
         const val TRACK_INFORMATION_KEY = "TRACK_INFORMATION_KEY"
+        private const val CLICK_ON_FAVORITE_DELAY = 1000L
     }
 }

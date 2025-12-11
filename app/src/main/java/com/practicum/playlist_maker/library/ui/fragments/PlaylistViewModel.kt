@@ -26,15 +26,6 @@ class PlaylistViewModel(private val context: Context,
 
                         }
                         when {
-                            errorMessage != null -> {
-                                renderState(
-                                    FragmentState.Error(
-                                        errorMessage = context.getString(R.string.playlist_was_not_created),
-                                    )
-                                )
-
-                            }
-
                             playlists.isEmpty() -> {
                                 renderState(
                                     FragmentState.Empty(
