@@ -4,9 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.FragmentPlaylistBinding
+import com.practicum.playlist_maker.library.domain.model.Playlist
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.getValue
 
@@ -14,6 +20,10 @@ class PlaylistFragment: Fragment(){
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PlaylistViewModel by viewModel()
+
+    private val playlistAdapter = PlaylistAdapter {
+        onPlaylistClickDebounce(it)
+    }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -30,15 +40,31 @@ class PlaylistFragment: Fragment(){
         }
         //endregion
         viewModel.showPlaylists()
+
+        binding.createTrackListButton.setOnClickListener {
+            showPlaylistCreator()
+        }
+
+
+        //region Creating a list of tracks by using RecyclerView
+        binding.playlistRecyclerView.layoutManager =
+            GridLayoutManager(requireActivity(),2)
+        binding.playlistRecyclerView.adapter = playlistAdapter
+
+        //endregion
     }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-    fun render(state: FragmentState) {
+    private fun showPlaylistCreator(){
+        findNavController().navigate(
+            R.id.action_mediaLibraryFragment_to_createNewPlaylistFragment)
+    }
+    fun render(state: PlaylistState) {
         when (state) {
-            is FragmentState.Content -> showContent(state.list)
-            is FragmentState.Empty -> showEmpty(state.message)
+            is PlaylistState.Content -> showContent(state.list)
+            is PlaylistState.Empty -> showEmpty(state.message)
         }
     }
 
@@ -46,32 +72,34 @@ class PlaylistFragment: Fragment(){
         binding.apply{
             placeholderIconNotCreated.isVisible = false
             playlistsPlaceholderMessage.isVisible = false
-            updateTrackListButton.isVisible=false
         }
     }
-    private fun showContent(tracks: List<Any>){
+    private fun showContent(playlists: List<Playlist>){
         placeholderDisable()
-    }
-    private fun showError(errorMessage: String){
-        binding.apply{
-            placeholderIconNotCreated.isVisible=true
-            playlistsPlaceholderMessage.isVisible =true
-            updateTrackListButton.isVisible=true
-            playlistsPlaceholderMessage.text = errorMessage
-        }
+        binding.playlistRecyclerView.isVisible=true
+        binding.createTrackListButton.isVisible=true
 
+        playlistAdapter.playlists.clear()
+        playlistAdapter.playlists.addAll(playlists)
+        playlistAdapter.notifyDataSetChanged()
     }
+
     private fun showEmpty(emptyMessage: String){
+        playlistAdapter.playlists.clear()
+        playlistAdapter.notifyDataSetChanged()
         binding.apply{
             placeholderIconNotCreated.isVisible=true
             playlistsPlaceholderMessage.isVisible =true
-            updateTrackListButton.isVisible=true
+            createTrackListButton.isVisible=true
+            playlistRecyclerView.isVisible=false
             playlistsPlaceholderMessage.text = emptyMessage
         }
     }
+
     companion object{
         fun newInstance(): PlaylistFragment{
             return PlaylistFragment()
         }
     }
+    fun onPlaylistClickDebounce(playlist: Playlist){}
 }

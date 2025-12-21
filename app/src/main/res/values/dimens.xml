@@ -40,4 +40,15 @@
     <dimen name="margin_106">106dp</dimen>
     <dimen name="margin_24">24dp</dimen>
     <dimen name="margin_20">20dp</dimen>
+    <dimen name="margin_188">188dp</dimen>
+    <dimen name="margin_170">170dp</dimen>
+    <dimen name="margin_82">82dp</dimen>
+    <dimen name="margin_32">32dp</dimen>
+    <dimen name="size_328">328dp</dimen>
+    <dimen name="size_56">56dp</dimen>
+    <dimen name="radius_3.5">3.5dp</dimen>
+    <dimen name="padding_8">8dp</dimen>
+    <dimen name="padding_16">16dp</dimen>
+    <dimen name="radius_8">8dp</dimen>
+    <dimen name="size_160">160dp</dimen>
 </resources>

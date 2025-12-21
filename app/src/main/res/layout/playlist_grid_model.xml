@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/playlist_item_cardView"
+        android:layout_width="@dimen/size_160"
+        android:layout_height="@dimen/size_160"
+        app:cardCornerRadius="@dimen/radius_8"
+        app:cardElevation="@dimen/elevation_0"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/playlist_image"
+            style="@style/track_list_album_icon"
+            tools:src="@tools:sample/avatars"/>
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/margin_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="@id/playlist_item_cardView"
+        app:layout_constraintTop_toBottomOf="@id/playlist_item_cardView"
+        android:paddingBottom="@dimen/margin_16"
+        >
+
+        <TextView android:id="@+id/playlist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/playlist_grid_item_text_track_count"
+            tools:text="@string/best_song"/>
+
+        <TextView android:id="@+id/track_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/playlist_grid_item_text_track_count"
+            tools:text="@string/track_count"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

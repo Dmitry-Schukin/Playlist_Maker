@@ -35,6 +35,23 @@
     <string name="new_playlist">Новый плейлист</string>
     <string name="favorites_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
+    <string name="save">Сохранить</string>
+    <string name="create">Создать</string>
+    <string name="best_song">Best of the best</string>
+    <string name="track_count">0 треков</string>
+    <string name="title">Название*</string>
+    <string name="description">Описание</string>
+    <string name="photo_storage">PlaylistAlbum</string>
+    <string name="track_is_already_in_playlist">Трек уже добавлен в плейлист</string>
+    <string name="track_was_added_in_playlist">Добавлено в плейлист</string>
+    <string name="finish_creating">Завершить создание плейлиста?</string>
+    <string name="all_data_will_be_lost">Все несохраненные данные будут потеряны</string>
+    <string name="cansel">Отмена</string>
+    <string name="finish">Завершить</string>
+    <string name="extension_jpg">.jpg</string>
+    <string name="playlist">Плейлист</string>
+    <string name="created">создан</string>
+    
 
 
     <!--Mock-object strings-->
