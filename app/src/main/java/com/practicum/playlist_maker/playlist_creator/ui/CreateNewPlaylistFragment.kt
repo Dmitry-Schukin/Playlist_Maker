@@ -42,10 +42,6 @@ class CreateNewPlaylistFragment: Fragment() {
     private var textWatcherForDescription: TextWatcher? = null
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
 
-    //region Debounce
-    private lateinit var titleDebounce: (String) -> Unit
-    private lateinit var descriptionDebounce: (String) -> Unit
-    //endregion
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -68,9 +64,10 @@ class CreateNewPlaylistFragment: Fragment() {
         textWatcherForTitle = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                typedTitleDebounce(
+                /*typedTitleDebounce(
                     changedText = s.toString().trim()
-                )
+                )*/
+                viewModel.updateTitle(s.toString().trim())
             }
             override fun afterTextChanged(s: Editable?) {
             }
@@ -80,9 +77,7 @@ class CreateNewPlaylistFragment: Fragment() {
         textWatcherForDescription = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                typedDescriptionDebounce(
-                    changedText = s.toString().trim()
-                )
+                viewModel.updateDescription(s.toString().trim())
             }
             override fun afterTextChanged(s: Editable?) {}
         }
@@ -114,15 +109,6 @@ class CreateNewPlaylistFragment: Fragment() {
             }
         //endregion
 
-        //region Debounce Initialization
-        titleDebounce = debounce<String>(EDIT_TEXT_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, true) { changedText ->
-            viewModel.updateTitle(changedText)
-        }
-        descriptionDebounce = debounce<String>(EDIT_TEXT_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, true) { changedText ->
-            viewModel.updateDescription(changedText)
-        }
-        //endregion
-
         //region Back click
             // Callback creating
         confirmDialog = MaterialAlertDialogBuilder(requireContext())
@@ -152,7 +138,6 @@ class CreateNewPlaylistFragment: Fragment() {
             if(viewModel.showExitDialog()){
                 confirmDialog.show()
             }else{
-
                 findNavController().navigateUp()
             }
         }
@@ -162,7 +147,7 @@ class CreateNewPlaylistFragment: Fragment() {
         binding.createPlaylistButton.setOnClickListener {
             val uri = viewModel.getLatestImageUri()
             var newImageNameInDirectory = ""
-            if(!uri.isEmpty()){
+            if(uri.isNotEmpty()){
                 newImageNameInDirectory = saveImageToPrivateStorage(uri)
             }
             viewModel.updateImagePath(newImageNameInDirectory)
@@ -190,16 +175,7 @@ class CreateNewPlaylistFragment: Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    fun typedTitleDebounce(changedText: String) {
-        if (viewModel.getLatestTitle() != changedText) {
-            titleDebounce(changedText)
-        }
-    }
-    fun typedDescriptionDebounce(changedText: String) {
-        if (viewModel.getLatestDescription() != changedText) {
-            descriptionDebounce(changedText)
-        }
-    }
+
     fun render(state: CreatorPlaylistState) {
         when (state) {
             is CreatorPlaylistState.PlaylistCreated-> finishActions()

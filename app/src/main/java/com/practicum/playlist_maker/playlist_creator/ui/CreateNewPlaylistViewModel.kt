@@ -27,8 +27,8 @@ class CreateNewPlaylistViewModel (private val interactor: CreatePlaylistInteract
 
 
     fun updateImagePath(path: String){
+        playlistImagePath = path
         if(playlistTitle.isEmpty()){
-            playlistImagePath = path
             renderState(CreatorPlaylistState.EmptyInputField)
         }else{
             playlistImagePath = path
@@ -36,17 +36,16 @@ class CreateNewPlaylistViewModel (private val interactor: CreatePlaylistInteract
         }
     }
     fun updateDescription(description: String){
+        playlistDescription = description
         if(playlistTitle.isEmpty()){
-            playlistDescription = description
             renderState(CreatorPlaylistState.EmptyInputField)
         }else{
-            playlistDescription = description
             renderState(CreatorPlaylistState.ReadyToCreate(playlistImagePath,playlistTitle,playlistDescription))
         }
     }
     fun updateTitle(newTitle:String){
-        if(playlistTitle.isEmpty()){
-            playlistTitle = newTitle
+        playlistTitle = newTitle
+        if(playlistTitle.isNotEmpty()){
             renderState(
                 CreatorPlaylistState.ReadyToCreate(
                     playlistImagePath,
@@ -55,7 +54,6 @@ class CreateNewPlaylistViewModel (private val interactor: CreatePlaylistInteract
                 )
             )
         }else {
-            playlistTitle = newTitle
             renderState(CreatorPlaylistState.EmptyInputField)
         }
     }
@@ -73,6 +71,8 @@ class CreateNewPlaylistViewModel (private val interactor: CreatePlaylistInteract
         stateLiveData.postValue(state)
     }
     fun showExitDialog(): Boolean{
-        return !playlistTitle.isEmpty()||!playlistImagePath.isEmpty()||!playlistDescription.isEmpty()
+        return playlistTitle.isNotEmpty()||
+                playlistImagePath.isNotEmpty()||
+                playlistDescription.isNotEmpty()
     }
 }
