@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/playlist_model_linear_layout_style"
+    android:theme="@style/Base.Theme.Playlist_Maker">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/playlist_item_cardView"
+        android:layout_width="@dimen/icon_size_45"
+        android:layout_height="@dimen/icon_size_45"
+        android:layout_marginLeft="@dimen/track_list_margin_13"
+        android:layout_gravity="center_vertical"
+        app:cardCornerRadius="@dimen/track_icon_corner_radius"
+        app:cardElevation="@dimen/elevation_0"
+        app:cardBackgroundColor="@android:color/transparent">
+        <ImageView
+            android:id="@+id/playlist_image"
+            style="@style/track_list_album_icon" />
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/margin_8"
+        android:layout_marginRight="@dimen/margin_8"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/playlist_name"
+            style="@style/track_list_text_view"
+            android:textAppearance="@style/track_list_song_name"
+            android:layout_width="match_parent"
+            tools:text="@string/best_song" />
+
+        <TextView
+            android:id="@+id/track_count"
+            style="@style/track_list_text_view"
+            android:textAppearance="@style/track_list_vocalist_time"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            tools:text="@string/track_count" />
+
+
+    </LinearLayout>
+</LinearLayout>

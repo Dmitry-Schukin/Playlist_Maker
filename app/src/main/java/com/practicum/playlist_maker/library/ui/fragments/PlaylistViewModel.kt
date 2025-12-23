@@ -1,53 +1,52 @@
 package com.practicum.playlist_maker.library.ui.fragments
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.library.domain.api.PlaylistInteractor
-import com.practicum.playlist_maker.search.domain.model.Track
+import com.practicum.playlist_maker.library.domain.model.Playlist
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 
 class PlaylistViewModel(private val context: Context,
                         private val playlistsInteractor: PlaylistInteractor): ViewModel() {
-    private val stateLiveData = MutableLiveData<FragmentState>()
-    fun observeState(): LiveData<FragmentState> = stateLiveData
-    private val handler = Handler(Looper.getMainLooper())
+    private val stateLiveData = MutableLiveData<PlaylistState>()
+    fun observeState(): LiveData<PlaylistState> = stateLiveData
 
     fun showPlaylists(){
-        playlistsInteractor.getPlaylists(
-            object : PlaylistInteractor.PlaylistConsumer{
-                override fun consume(playlists: List<Any>?, errorMessage: String?) {
-                    handler.post {
-                        val playlists = mutableListOf<Track>()
-                        if (playlists != null) {
-
+        viewModelScope.launch {
+            playlistsInteractor
+                .getPlaylists()
+                .catch { exception -> Log.d("FlowGettingPlaylistError", "$exception") }
+                .collect { pair ->
+                    val list = mutableListOf<Playlist>()
+                    if (pair.first != null) {
+                        list.addAll(pair.first!!)
+                    }
+                    when {
+                        list.isEmpty() -> {
+                            renderState(
+                                PlaylistState.Empty(
+                                    message = context.getString(R.string.media_library_is_empty),
+                                )
+                            )
                         }
-                        when {
-                            playlists.isEmpty() -> {
-                                renderState(
-                                    FragmentState.Empty(
-                                        message = context.getString(R.string.playlist_was_not_created),
-                                    )
+                        else -> {
+                            renderState(
+                                PlaylistState.Content(
+                                    list = list,
                                 )
-                            }
-
-                            else -> {
-                                renderState(
-                                    FragmentState.Content(
-                                        list =  playlists,
-                                    )
-                                )
-                            }
+                            )
                         }
                     }
                 }
-            })
-
+        }
     }
-    private fun renderState(state: FragmentState) {
+    private fun renderState(state: PlaylistState) {
         stateLiveData.postValue(state)
     }
 

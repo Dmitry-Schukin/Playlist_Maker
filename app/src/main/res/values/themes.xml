@@ -4,7 +4,7 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimary">@color/bright_blue</item>
         <item name="colorPrimaryVariant">@color/light_gray_background_color</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->

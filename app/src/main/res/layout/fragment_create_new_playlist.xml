@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/new_playlist_constraint_layout"
+    style="@style/constraint_layout_style"
+    android:layout_height="match_parent"
+    tools:context="com.practicum.playlist_maker.playlist_creator.ui.CreateNewPlaylistFragment">
+    
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/new_playlist_material_toolbar"
+        style="@style/new_playlist_toolbar_style"
+        app:titleTextAppearance="@style/screens_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <ImageView
+        android:id="@+id/add_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_188"
+        android:src="@drawable/add_playlist_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/image_card_view"
+        style="@style/image_card_view_attributes"
+        android:layout_marginTop="@dimen/margin_82"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/playlist_image"
+            android:layout_width="@dimen/icon_size_312"
+            android:layout_height="@dimen/icon_size_312"
+            android:src="@drawable/square_with_rounded_corners"
+            android:scaleType="centerCrop"
+            />
+    </androidx.cardview.widget.CardView>
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/name_input_layout"
+        style="@style/create_playlist_text_input_layout"
+        app:hintTextAppearance="@style/text_input_layout_stile_hint_active"
+        android:layout_marginTop="@dimen/margin_32"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_card_view">
+        <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/playlist_name"
+        style="@style/text_input_edit_text_stile"
+        android:textAppearance="@style/text_input_layout_stile"
+        android:hint="@string/title" />
+
+</com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/description_input_layout"
+        style="@style/create_playlist_text_input_layout"
+        app:hintTextAppearance="@style/text_input_layout_stile_hint_active"
+        android:layout_marginTop="@dimen/margin_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name_input_layout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/playlist_description"
+            style="@style/text_input_edit_text_stile"
+            android:textAppearance="@style/text_input_layout_stile"
+            android:hint="@string/description" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/create_playlist_button"
+        style="@style/create_playlist_button"
+        android:layout_marginBottom="50dp"
+        android:text="@string/create"
+        android:textAppearance="@style/save_playlist_button_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

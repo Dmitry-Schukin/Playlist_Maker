@@ -60,6 +60,12 @@
         <item name="titleTextColor">@color/white</item>
         <item name="navigationIconTint">@color/white</item>
     </style>
+    <style name="new_playlist_toolbar_style" parent="material_toolbar_general_size_style">
+        <item name="navigationIcon">@drawable/arrow_back</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="navigationIconTint">@color/white</item>
+        <item name="title">@string/new_playlist</item>
+    </style>
     <style name="media_material_toolbar_style" parent="material_toolbar_general_size_style">
         <item name="title">@string/media_library</item>
         <item name="titleTextColor">@color/white</item>
@@ -174,7 +180,6 @@
         <item name="android:paddingRight">@dimen/left_right_padding</item>
         <item name="tint">@color/dark_color</item>
     </style>
-
     <!-- Атрибуты текста списка треков-->
     <style name="track_list_song_name">
         <item name="android:textSize">@dimen/text_size_16</item>
@@ -456,5 +461,113 @@
     <style name="text_bottom_navigation">
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textSize">@dimen/text_size_12</item>
+    </style>
+    <!-- Атрибуты New Playlist-->
+    <style name="save_playlist_button_text">
+        <item name="android:textSize">@dimen/text_size_16</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">500</item>
+    </style>
+    <style name="playlist_model_linear_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/model_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@color/dark_color</item>
+    </style>
+    <style name="create_playlist_text_input_layout">
+        <item name="android:layout_width">@dimen/size_328</item>
+        <item name="android:layout_height">@dimen/size_56</item>
+        <item name="boxBackgroundColor">@android:color/transparent</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radius_3.5</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_3.5</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_3.5</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_3.5</item>
+        <item name="boxStrokeColor">@color/stroke_color_night</item>
+        <item name="hintTextColor">@color/bright_blue</item>
+        <item name="boxBackgroundMode">outline</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+    <style name="text_input_layout_stile">
+        <item name="android:textSize">@dimen/text_size_16</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+    <style name="text_input_layout_stile_hint_active">
+        <item name="android:textSize">@dimen/text_size_12</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+    <style name="text_input_edit_text_stile">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingTop">@dimen/padding_8</item>
+        <item name="android:paddingBottom">@dimen/padding_8</item>
+        <item name="android:paddingLeft">@dimen/padding_16</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:imeOptions">actionDone</item>
+        <item name="android:inputType">text</item>
+        <item name="android:lines">1</item>
+        <item name="maxLines">1</item>
+        <item name="android:textColorHighlight">@color/bright_blue</item>
+    </style>
+    <style name="create_playlist_button">
+        <item name="android:layout_width">326dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="backgroundTint">@color/gray_color</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">@dimen/radius_8</item>
+    </style>
+    <!-- Атрибуты playlist grid item-->
+    <style name="playlist_grid_linear_layout_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/dark_color</item>
+        <item name="android:theme">@style/Base.Theme.Playlist_Maker</item>
+    </style>
+    <style name="playlist_grid_item_text_track_count">
+        <item name="android:textSize">@dimen/text_size_12</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <!-- Атрибуты BottomSheet-->
+    <style name="bottom_sheet_layout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/bottom_sheet_background</item>
+        <item name="android:backgroundTint">@color/dark_color</item>
+        <item name="android:orientation">vertical</item>
+        <item name="behavior_hideable">true</item>
+        <item name="behavior_peekHeight">240dp</item>
+        <item name="layout_behavior">com.google.android.material.bottomsheet.BottomSheetBehavior</item>
+    </style>
+    <style name="bottom_sheet_view">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">4dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginTop">@dimen/margin_8</item>
+        <item name="android:background">@drawable/rectangle_for_bottomsheet</item>
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
+    <style name="bottom_sheet_title">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:text">@string/add_to_playlist</item>
+    </style>
+    <style name="bottom_sheet_title_text_style">
+        <item name="android:textSize">@dimen/text_size_19</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">500</item>
     </style>
 </resources>
