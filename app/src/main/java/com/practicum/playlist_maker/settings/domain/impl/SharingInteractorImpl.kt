@@ -16,5 +16,4 @@ class SharingInteractorImpl(
     override fun openTerms(): String {
         return externalNavigator.openLink()
     }
-
 }

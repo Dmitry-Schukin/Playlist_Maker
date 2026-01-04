@@ -14,4 +14,9 @@ class CreatePlaylistRepositoryImpl(
         val playlistEntity = playlistDbConvertor.map(playlist)
         appDatabase.playlistDao().insertNewPlaylist(playlistEntity)
     }
+
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        val playlistEntity = playlistDbConvertor.map(playlist)
+        appDatabase.playlistDao().updatePlaylist(playlistEntity)
+    }
 }

@@ -8,6 +8,8 @@
     <dimen name="text_size_13">13sp</dimen>
     <dimen name="text_size_11">11sp</dimen>
     <dimen name="text_size_12">12sp</dimen>
+    <dimen name="text_size_24">24sp</dimen>
+    <dimen name="text_size_18">18sp</dimen>
     <dimen name="left_right_margin">16dp</dimen>
     <dimen name="settings_top_bottom_padding">21dp</dimen>
     <dimen name="top_bottom_margin">24dp</dimen>
@@ -51,4 +53,5 @@
     <dimen name="padding_16">16dp</dimen>
     <dimen name="radius_8">8dp</dimen>
     <dimen name="size_160">160dp</dimen>
+    <dimen name="margin_5">5dp</dimen>
 </resources>

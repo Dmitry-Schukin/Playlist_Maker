@@ -35,4 +35,18 @@ class PlaylistInteractorImpl(private val repository: PlaylistRepository): Playli
         }
     }
 
+    override fun getPlaylistInfo(playlistId: Long): Flow<Pair<Playlist?, String?>> {
+        return repository.getPlaylistInfo(playlistId).map {result ->
+            when (result) {
+                is Resource.Success -> {
+                    Pair(result.data, null)
+                }
+
+                is Resource.Error -> {
+                    Pair(null, result.message)
+                }
+            }
+        }
+    }
+
 }

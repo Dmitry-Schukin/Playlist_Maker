@@ -45,6 +45,16 @@ class PlaylistRepositoryImpl(
                 playlistEntity.trackCount)
     }
 
+    override fun getPlaylistInfo(playlistId:Long): Flow<Resource<Playlist>> = flow {
+            try {
+                val playlistEntity = appDatabase.playlistDao().getPlaylistInfo(playlistId)
+                val requestResult = Resource.Success(playlistDbConvertor.map(playlistEntity))
+                emit(requestResult)
+            }catch (ex: Exception){
+                emit(Resource.Error("Ошибка: $ex"))
+            }
+    }
+
     private fun convertFromPlaylistEntity(playlists: List<PlaylistEntity>): List<Playlist> {
         return playlists.map { playlist -> playlistDbConvertor.map(playlist) }
     }

@@ -1,6 +1,7 @@
 package com.practicum.playlist_maker.library.domain.api
 
 import com.practicum.playlist_maker.library.domain.model.Playlist
+import com.practicum.playlist_maker.search.domain.model.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistInteractor {
@@ -8,5 +9,6 @@ interface PlaylistInteractor {
     suspend fun deletePlaylist(playlist: Playlist)
     suspend fun updateTrackListAndCount(playlist: Playlist)
     fun getPlaylists():Flow<Pair<List<Playlist>?, String?>>
+    fun getPlaylistInfo(playlistId:Long):Flow<Pair<Playlist?, String?>>
 
 }

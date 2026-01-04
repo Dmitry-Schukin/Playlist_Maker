@@ -1,19 +1,16 @@
-package com.practicum.playlist_maker.library.ui.fragments
+package com.practicum.playlist_maker.library.ui.fragments.playlists
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Environment
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.PlaylistGridModelBinding
 import com.practicum.playlist_maker.library.domain.model.Playlist
-import java.io.File
 
 class PlaylistViewHolder (private val binding: PlaylistGridModelBinding) :
     RecyclerView.ViewHolder(binding.root) {

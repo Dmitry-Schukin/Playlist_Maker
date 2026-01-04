@@ -10,4 +10,8 @@ class CreatePlaylistInteractorImpl (private val repository: CreatePlaylistReposi
     override suspend fun createNewPlaylist(playlist: Playlist) {
         return repository.createNewPlaylist(playlist)
     }
+
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        return repository.updatePlaylist(playlist)
+    }
 }

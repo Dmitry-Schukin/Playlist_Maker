@@ -10,4 +10,5 @@ interface PlaylistRepository {
     suspend fun deletePlaylist(playlist: Playlist)
     fun getPlaylists():Flow<Resource<List<Playlist>>>
     suspend fun updateTrackListAndCount(playlist: Playlist)
+    fun getPlaylistInfo(playlistId:Long):Flow<Resource<Playlist>>
 }

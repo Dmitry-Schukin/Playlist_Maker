@@ -1,8 +1,9 @@
-package com.practicum.playlist_maker.library.ui.fragments
+package com.practicum.playlist_maker.library.ui.fragments.playlists
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlist_maker.library.domain.model.Playlist
+import com.practicum.playlist_maker.library.ui.fragments.playlists.PlaylistViewHolder
 
 class PlaylistAdapter (val clickListener: PlaylistClickListener) : RecyclerView.Adapter<PlaylistViewHolder> () {
 

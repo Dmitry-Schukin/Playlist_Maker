@@ -28,6 +28,21 @@ class Playlist(
             )
             return newPlaylist
         }
+        fun deleteTrackFromPlaylist(playlist: Playlist, trackId: String):Playlist{
+            val newList = playlist.trackIdList.toMutableList()
+            newList.remove(trackId)
+            var newCount = playlist.trackCount
+            newCount--
+            val newPlaylist = Playlist(
+                playlist.playlistId,
+                playlist.playlistName,
+                playlist.playlistDescription,
+                playlist.imagePath,
+                newList,
+                newCount
+            )
+            return newPlaylist
+        }
     }
 
 
