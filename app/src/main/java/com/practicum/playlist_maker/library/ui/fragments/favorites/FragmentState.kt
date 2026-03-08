@@ -1,4 +1,4 @@
-package com.practicum.playlist_maker.library.ui.fragments
+package com.practicum.playlist_maker.library.ui.fragments.favorites
 
 import com.practicum.playlist_maker.search.domain.model.Track
 

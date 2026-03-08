@@ -1,6 +1,5 @@
 package com.practicum.playlist_maker.playlist_creator.ui
 
-import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -24,7 +23,19 @@ class CreateNewPlaylistViewModel (private val interactor: CreatePlaylistInteract
             renderState(CreatorPlaylistState.PlaylistCreated)
         }
     }
-
+    fun updateOldPlaylistWithNewParameters(oldPlaylist:Playlist){
+        viewModelScope.launch {
+            val updatedPlaylist = Playlist(
+                oldPlaylist.playlistId,
+                playlistTitle,
+                playlistDescription,
+                playlistImagePath,
+                oldPlaylist.trackIdList,
+                oldPlaylist.trackCount)
+            interactor.updatePlaylist(updatedPlaylist)
+            renderState(CreatorPlaylistState.PlaylistUpdated)
+        }
+    }
 
     fun updateImagePath(path: String){
         playlistImagePath = path

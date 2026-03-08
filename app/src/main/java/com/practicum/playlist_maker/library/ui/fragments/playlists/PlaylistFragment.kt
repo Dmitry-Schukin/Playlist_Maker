@@ -1,26 +1,28 @@
-package com.practicum.playlist_maker.library.ui.fragments
+package com.practicum.playlist_maker.library.ui.fragments.playlists
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.FragmentPlaylistBinding
 import com.practicum.playlist_maker.library.domain.model.Playlist
+import com.practicum.playlist_maker.playlist_tracks.ui.PlaylistTracksFragment.Companion.PLAYLIST_INFORMATION_KEY_FOR_UPDATE
+import com.practicum.playlist_maker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.getValue
 
 class PlaylistFragment: Fragment(){
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PlaylistViewModel by viewModel()
-
+    //region Debounce
+    private lateinit var onPlaylistClickDebounce: (Playlist) -> Unit
+    //endregion
     private val playlistAdapter = PlaylistAdapter {
         onPlaylistClickDebounce(it)
     }
@@ -45,12 +47,17 @@ class PlaylistFragment: Fragment(){
             showPlaylistCreator()
         }
 
-
         //region Creating a list of tracks by using RecyclerView
         binding.playlistRecyclerView.layoutManager =
-            GridLayoutManager(requireActivity(),2)
+            GridLayoutManager(requireActivity(), 2)
         binding.playlistRecyclerView.adapter = playlistAdapter
 
+        //endregion
+
+        //region Debounce Initialization
+        onPlaylistClickDebounce = debounce<Playlist>(CLICK_ON_TRACK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { playlist ->
+            onPlaylistClick(playlist)
+        }
         //endregion
     }
     override fun onDestroyView() {
@@ -58,8 +65,9 @@ class PlaylistFragment: Fragment(){
         _binding = null
     }
     private fun showPlaylistCreator(){
+        val bundle = Bundle().apply { putParcelable(PLAYLIST_INFORMATION_KEY_FOR_UPDATE,null) }
         findNavController().navigate(
-            R.id.action_mediaLibraryFragment_to_createNewPlaylistFragment)
+            R.id.action_mediaLibraryFragment_to_createNewPlaylistFragment,bundle)
     }
     fun render(state: PlaylistState) {
         when (state) {
@@ -95,11 +103,18 @@ class PlaylistFragment: Fragment(){
             playlistsPlaceholderMessage.text = emptyMessage
         }
     }
-
+    fun onPlaylistClick(playlist: Playlist){
+        val bundle = Bundle().apply { putLong(PLAYLIST_INFORMATION_KEY,playlist.playlistId) }
+        findNavController().navigate(
+            R.id.action_mediaLibraryFragment_to_playlistTracksFragment,
+            bundle)
+    }
     companion object{
         fun newInstance(): PlaylistFragment{
             return PlaylistFragment()
         }
+        const val PLAYLIST_INFORMATION_KEY = "PLAYLIST_INFORMATION_KEY"
+        private const val CLICK_ON_TRACK_DEBOUNCE_DELAY = 1000L
     }
-    fun onPlaylistClickDebounce(playlist: Playlist){}
+
 }

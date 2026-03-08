@@ -4,4 +4,5 @@ import com.practicum.playlist_maker.library.domain.model.Playlist
 
 interface CreatePlaylistInteractor {
     suspend fun createNewPlaylist(playlist: Playlist)
+    suspend fun updatePlaylist(playlist: Playlist)
 }

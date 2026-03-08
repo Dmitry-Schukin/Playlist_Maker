@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +21,7 @@ import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.FragmentAudioPlayerBinding
 import com.practicum.playlist_maker.library.domain.model.Playlist
 import com.practicum.playlist_maker.player.domain.model.MediaPlayerState
+import com.practicum.playlist_maker.playlist_tracks.ui.PlaylistTracksFragment.Companion.PLAYLIST_INFORMATION_KEY_FOR_UPDATE
 import com.practicum.playlist_maker.search.domain.model.Track
 import com.practicum.playlist_maker.utils.debounce
 import kotlinx.coroutines.delay
@@ -71,13 +71,15 @@ class AudioPlayerFragment: Fragment() {
             requireArguments().getParcelable<Track>(TRACK_INFORMATION_KEY)
         }?: return
         url = track.previewUrl
+        //endregion
 
+        //region Observer
         viewModel.observeState().observe(viewLifecycleOwner){ t->
             changeButtonState(t.state== MediaPlayerState.MEDIA_PLAYER_STATE_PLAYING)
             changeFavoriteStateButton(t.isFavorite)
             binding.audioTime.text= t.timer
             updatePlaylists(t)
-            addTrackToPlaylist(t.inPlaylist)
+            checkTrackAddingToPlaylistState(t.inPlaylist)
         }
         //endregion
 
@@ -163,7 +165,6 @@ class AudioPlayerFragment: Fragment() {
                 binding.overlay.alpha=slideOffset
             }
         })
-
         //endregion
         onPlaylistClickDebounce = debounce<Playlist>(CLICK_ON_PLAYLIST_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { playlist ->
             chosenPlaylistTitle = playlist.playlistName
@@ -179,12 +180,6 @@ class AudioPlayerFragment: Fragment() {
         binding.playlistsRecyclerView.adapter = playlistAdapter
         //endregion
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            object: OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    viewModel.release()
-                }
-            })
     }
 
     override fun onStop() {
@@ -192,7 +187,6 @@ class AudioPlayerFragment: Fragment() {
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        //viewModel.release()
         _binding = null
     }
     override fun onPause() {
@@ -202,7 +196,6 @@ class AudioPlayerFragment: Fragment() {
 
     override fun onResume() {
         super.onResume()
-
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
@@ -240,18 +233,17 @@ class AudioPlayerFragment: Fragment() {
         playlistAdapter.playlists.addAll(state.playlists)
         playlistAdapter.notifyDataSetChanged()
     }
-    private fun addTrackToPlaylist(state: AddingToPlaylistState){
+    private fun checkTrackAddingToPlaylistState(state: AddingToPlaylistState){
         when(state){
-            AddingToPlaylistState.AlreadyInPlaylist -> {
-                toastConstructor(R.string.track_is_already_in_playlist,chosenPlaylistTitle)
+            is AddingToPlaylistState.AlreadyInPlaylist -> {
+                toastConstructor(R.string.track_is_already_in_playlist,viewModel.getPlaylistNameWhereTrackWasAdded())
                 viewModel.returnDefaultState()
             }
-            AddingToPlaylistState.ThereIsNotInPlaylist -> {viewModel.returnDefaultState()}
-            AddingToPlaylistState.JustAddedInPlaylist -> {
-                toastConstructor(R.string.track_was_added_in_playlist,chosenPlaylistTitle)
+            is AddingToPlaylistState.JustAddedInPlaylist -> {
+                toastConstructor(R.string.track_was_added_in_playlist,viewModel.getPlaylistNameWhereTrackWasAdded())
                 viewModel.returnDefaultState()
             }
-            AddingToPlaylistState.Default -> {}
+            is AddingToPlaylistState.Default -> {}
         }
     }
     private fun toastConstructor(textFromDirectory:Int,playlistTitle: String ){
@@ -259,7 +251,8 @@ class AudioPlayerFragment: Fragment() {
         Toast.makeText(requireContext(),message, Toast.LENGTH_SHORT).show()
     }
     private fun showPlaylistCreator(){
-        findNavController().navigate(R.id.action_audioPlayerFragment_to_createNewPlaylistFragment)
+        val bundle = Bundle().apply { putParcelable(PLAYLIST_INFORMATION_KEY_FOR_UPDATE,null) }
+        findNavController().navigate(R.id.action_audioPlayerFragment_to_createNewPlaylistFragment,bundle)
     }
 
     companion object {

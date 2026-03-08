@@ -1,4 +1,4 @@
-package com.practicum.playlist_maker.library.ui.fragments
+package com.practicum.playlist_maker.library.ui.fragments.favorites
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,12 +11,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.databinding.FragmentFavoritesTracksBinding
+import com.practicum.playlist_maker.library.ui.fragments.favorites.FavoritesTracksViewModel
+import com.practicum.playlist_maker.library.ui.fragments.favorites.FragmentState
 import com.practicum.playlist_maker.player.ui.AudioPlayerFragment
 import com.practicum.playlist_maker.search.domain.model.Track
 import com.practicum.playlist_maker.search.ui.TrackSearchAdapter
 import com.practicum.playlist_maker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.getValue
 
 class FavoritesTracksFragment: Fragment() {
     private var _binding: FragmentFavoritesTracksBinding?=null
@@ -57,7 +58,11 @@ class FavoritesTracksFragment: Fragment() {
         //endregion
 
         //region Debouncer
-        onFavoriteTrackClickDebounce = debounce<Track>(CLICK_ON_FAVORITE_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
+        onFavoriteTrackClickDebounce = debounce<Track>(
+            CLICK_ON_FAVORITE_DEBOUNCE_DELAY,
+            viewLifecycleOwner.lifecycleScope,
+            false
+        ) { track ->
             showTrackAudioPlayer(track)
         }
         //endregion

@@ -1,4 +1,4 @@
-package com.practicum.playlist_maker.library.ui.fragments
+package com.practicum.playlist_maker.library.ui.fragments.favorites
 
 import android.content.Context
 import android.util.Log
@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlist_maker.R
 import com.practicum.playlist_maker.library.domain.api.FavoritesDBInteractor
+import com.practicum.playlist_maker.library.ui.fragments.favorites.FragmentState
 import com.practicum.playlist_maker.search.domain.model.Track
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch

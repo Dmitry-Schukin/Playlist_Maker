@@ -51,10 +51,27 @@
     <string name="extension_jpg">.jpg</string>
     <string name="playlist">Плейлист</string>
     <string name="created">создан</string>
-    
-
+    <string name="playlist_is_empty">В плейлисте нет треков</string>
+    <string name="track">трек</string>
+    <string name="track_a">трека</string>
+    <string name="track_ov">треков</string>
+    <string name="minute">минута</string>
+    <string name="minutes">минут</string>
+    <string name="minutes2">минуты</string>
+    <string name="share">Поделиться</string>
+    <string name="edit_info">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+    <string name="do_you_want_to_delete_track">Хотите удалить трек?</string>
+    <string name="do_you_want_to_delete_playlist">Хотите удалить плейлист</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
+    <string name="playlist_is_not_available_for_sharing">Список треков, которым можно поделиться пуст</string>
 
     <!--Mock-object strings-->
+    <string name="total_track_duration">300 минут</string>
+    <string name="playlist_track_count">90 треков</string>
     <string name="first_track">Smells Like Teen Spirit</string>
     <string name="first_group">Nirvana</string>
     <string name="first_track_time">05:01</string>
@@ -87,4 +104,5 @@
     <string name="fifth_track_time">05:03</string>
     <string name="fifth_album_url">https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg</string>
     <string name="fifth_preview_url">https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/17/85/a9/1785a9d7-be0d-3ef6-20a3-06563028c2a6/mzaf_11217232726484859087.plus.aac.p.m4a</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

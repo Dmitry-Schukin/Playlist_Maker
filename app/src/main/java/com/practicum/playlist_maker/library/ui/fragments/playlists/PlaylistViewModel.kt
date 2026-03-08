@@ -1,4 +1,4 @@
-package com.practicum.playlist_maker.library.ui.fragments
+package com.practicum.playlist_maker.library.ui.fragments.playlists
 
 import android.content.Context
 import android.util.Log
@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class PlaylistViewModel(private val context: Context,
-                        private val playlistsInteractor: PlaylistInteractor): ViewModel() {
+                        private val playlistsInteractor: PlaylistInteractor
+): ViewModel() {
     private val stateLiveData = MutableLiveData<PlaylistState>()
     fun observeState(): LiveData<PlaylistState> = stateLiveData
 

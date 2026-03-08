@@ -11,4 +11,5 @@
     <color name="yellow">#FCD452</color>
     <color name="red">#F56B6C</color>
     <color name="player_overlay">#99000000</color>
+    <color name="background_icon">#1E1E1E</color>
 </resources>

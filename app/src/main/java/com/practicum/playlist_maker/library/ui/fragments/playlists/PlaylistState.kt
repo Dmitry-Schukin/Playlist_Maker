@@ -1,4 +1,4 @@
-package com.practicum.playlist_maker.library.ui.fragments
+package com.practicum.playlist_maker.library.ui.fragments.playlists
 
 import com.practicum.playlist_maker.library.domain.model.Playlist
 
